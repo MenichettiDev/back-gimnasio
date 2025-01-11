@@ -1,3 +1,5 @@
+require('dotenv').config(); // Cargar variables de entorno desde el archivo .env
+
 const express = require('express'); //Importamos Express, que nos ayuda a crear el servidor.
 const app = express(); //Creamos una instancia de la aplicación Express.
 const path = require('path'); //Usamos path para trabajar con rutas de archivos de forma más sencilla.
@@ -25,7 +27,7 @@ app.use(cors({
 }));
 
 //Todas las rutas definidas en mainRoutes estarán bajo "/"
-// app.use('/', mainRoutes);
+app.use('/', mainRoutes);
 app.use('/', authRoutes); //Rutas de autenticación.
 
 //Configuración del puerto

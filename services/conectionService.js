@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const autenticarUsuario = ( email, contrasenia ) => {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT * FROM tb_usuario WHERE email = ?';
+        const query = 'SELECT * FROM tb_persona WHERE email = ?';
         conexion.query(query, [email], async (error, resultados) => {
             if (error) return reject(error);
             //Si se encontró un médico con esa matrícula
@@ -25,7 +25,7 @@ const autenticarUsuario = ( email, contrasenia ) => {
 
 const obtenerUsuarioLogueado = ( email ) => {
     return new Promise((resolve, reject) => {
-        const queryUsuario = 'SELECT * FROM tb_usuario where email = ?';
+        const queryUsuario = 'SELECT * FROM tb_persona where email = ?';
         conexion.query(queryUsuario, [email], (error, resultados) => {
             if (error) return reject(error);
             resolve(resultados); //Devuelve los datos del médico logueado
