@@ -4,6 +4,7 @@ const entrenadorController = require('../controllers/entrenadorController'); //I
 const atletaController = require('../controllers/atletaController');
 const menuController = require('../controllers/menuController'); //Importamos el controlador de menú
 const ejercicioController = require('../controllers/ejercicioController')
+const repeticionController = require('../controllers/repeticionController')
 // Ruta para obtener los menús de una persona por su id_persona
 router.get('/menus/:idPersona', menuController.obtenerMenus);
 //Entrenador
@@ -14,5 +15,10 @@ router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
 router.get('/getAtletas', atletaController.obtenerAtletas );
 //Ejercicio
 router.post('/getEjercicioByGrupoMuscular', ejercicioController.getEjercicioPorGrupoMuscular );
+//Tipo de repeticion de ejercicio
+router.get('/getRepeticion', repeticionController.obtenerRepeticion );
+//Gimnasios
+
+
 
 module.exports = router; 
