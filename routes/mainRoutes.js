@@ -7,6 +7,7 @@ const ejercicioController = require('../controllers/ejercicioController')
 const repeticionController = require('../controllers/repeticionController')
 const gimnasioController = require('../controllers/gimnasioController')
 const gruposMuscularesController = require('../controllers/gruposMuscularesController')
+const membresiaController = require('../controllers/membresiaController')
 
 
 
@@ -28,6 +29,8 @@ router.post('/getGimnasioByIdEntrenador', gimnasioController.obtenerGimnasioPorI
 router.get('/getGimnasios', gimnasioController.obtenerGimnasios );
 //Grupos musculares
 router.get('/getGruposMusculares', gruposMuscularesController.obtenerGruposMusculares );
-
+//Membresias
+router.post('/getMembresiasByIdGimnaiso', membresiaController.obtenerMembresiaByGimnasio );
+router.get('/getMembresias', membresiaController.obtenerMembresias );
 
 module.exports = router; 
