@@ -7,10 +7,10 @@ const menuController = require('../controllers/menuController'); //Importamos el
 // Ruta para obtener los menús de una persona por su id_persona
 router.get('/menus/:idPersona', menuController.obtenerMenus);
 //Entrenador
-router.post('/obtener-entrenador-by-id', entrenadorController.obtenerEntrenadorByIdPersona );
-router.get('/obtener-entrenadores', entrenadorController.obtenerEntrenadores );
+router.post('/getEntrenador-by-id', entrenadorController.obtenerEntrenadorByIdPersona );
+router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
 //Atleta
-router.post('/obtener-atleta-by-id', atletaController.obtenerAtletaByIdEntrenador );
-router.get('/obtener-atletas', atletaController.obtenerAtletas );
+router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
+router.get('/getAtletas', atletaController.obtenerAtletas );
 
 module.exports = router; 
