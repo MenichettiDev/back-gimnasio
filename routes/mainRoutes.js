@@ -6,6 +6,11 @@ const menuController = require('../controllers/menuController'); //Importamos el
 const ejercicioController = require('../controllers/ejercicioController')
 const repeticionController = require('../controllers/repeticionController')
 const gimnasioController = require('../controllers/gimnasioController')
+const gruposMuscularesController = require('../controllers/gruposMuscularesController')
+
+
+
+
 // Ruta para obtener los menús de una persona por su id_persona
 router.get('/menus/:idPersona', menuController.obtenerMenus);
 //Entrenador
@@ -21,6 +26,8 @@ router.get('/getRepeticion', repeticionController.obtenerRepeticion );
 //Gimnasios
 router.post('/getGimnasioByIdEntrenador', gimnasioController.obtenerGimnasioPorIdEntrenador );
 router.get('/getGimnasios', gimnasioController.obtenerGimnasios );
+//Grupos musculares
+router.get('/getGruposMusculares', gruposMuscularesController.obtenerGruposMusculares );
 
 
 module.exports = router; 
