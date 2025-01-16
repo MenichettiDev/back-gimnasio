@@ -13,7 +13,9 @@ const membresiaController = require('../controllers/membresiaController')
 
 
 // Ruta para obtener los menús de una persona por su id_persona
+router.get('/getMenus', menuController.obtenerMenus2 );
 router.get('/menus/:idPersona', menuController.obtenerMenus);
+router.post('/menusByIdPersona', menuController.obtenerMenusByIdPersona ); //Probar
 //Entrenador
 router.post('/getEntrenador-by-id', entrenadorController.obtenerEntrenadorByIdPersona );
 router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
@@ -32,5 +34,9 @@ router.get('/getGruposMusculares', gruposMuscularesController.obtenerGruposMuscu
 //Membresias
 router.post('/getMembresiasByIdGimnaiso', membresiaController.obtenerMembresiaByGimnasio );
 router.get('/getMembresias', membresiaController.obtenerMembresias );
+
+
+
+
 
 module.exports = router; 
