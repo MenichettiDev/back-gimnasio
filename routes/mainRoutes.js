@@ -9,16 +9,16 @@ const gimnasioController = require('../controllers/gimnasioController')
 const gruposMuscularesController = require('../controllers/gruposMuscularesController')
 const membresiaController = require('../controllers/membresiaController')
 const rutinaController = require('../controllers/rutinaController')
+const fraseController = require('../controllers/fraseController')
 
 
 
 
 // Ruta para obtener los menús de una persona por su id_persona
-router.get('/getMenus', menuController.obtenerMenus2 );
-router.get('/menus/:idPersona', menuController.obtenerMenus);
+router.get('/getMenus', menuController.obtenerMenus );
 router.post('/menusByIdPersona', menuController.obtenerMenusByIdPersona ); //Probar
 //Entrenador
-router.post('/getEntrenador-by-id', entrenadorController.obtenerEntrenadorByIdPersona );
+router.post('/getEntrenadorById', entrenadorController.obtenerEntrenadorByIdPersona );
 router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
 //Atleta
 router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
@@ -39,7 +39,8 @@ router.get('/getMembresias', membresiaController.obtenerMembresias );
 router.post('/getRutinaByIdAtleta', rutinaController.obtenerRutinaByIdAtleta );
 router.post('/getRutinaByIdCreador', rutinaController.obtenerRutinaByIdCreador );
 router.get('/getRutinasFree', rutinaController.obtenerRutinasFree );
-
+//Frase
+router.get('/getFraseAleatoria', fraseController.obtenerFraseAleatoria );
 
 
 
