@@ -1,25 +1,25 @@
 // Importar el servicio necesario para la consulta
-const { listarRutinaByIdAtleta, listarRutinaByIdCreador, listarRutinasFree} = require('../services/rutinaService');
+const { listarRutinaByIdAtleta, listarRutinaByIdCreador, listarRutinasFree } = require('../services/rutinaService');
 
 exports.obtenerRutinaByIdAtleta = async (req, res) => {
-    const { id_atleta } = req.body; 
+    const { id_atleta } = req.body;
 
     if (!id_atleta) {
-        
+
         return res.status(400).json({ message: 'El id_atleta es obligatorio' });
     }
 
     try {
-        
+
         const resultados = await listarRutinaByIdAtleta(id_atleta);
 
         if (resultados && resultados.length > 0) {
-            
-            return res.json({
-                rutinas: resultados 
-            });
+
+            return res.json(
+                resultados
+            );
         } else {
-            
+
             return res.status(404).json({ message: 'No se encontraron rutinas para este atleta' });
         }
     } catch (error) {
@@ -29,24 +29,24 @@ exports.obtenerRutinaByIdAtleta = async (req, res) => {
 };
 
 exports.obtenerRutinaByIdCreador = async (req, res) => {
-    const { id_persona } = req.body; 
+    const { id_persona } = req.body;
 
     if (!id_persona) {
-        
+
         return res.status(400).json({ message: 'El id_persona es obligatorio' });
     }
 
     try {
-        
+
         const resultados = await listarRutinaByIdCreador(id_persona);
 
         if (resultados && resultados.length > 0) {
-            
+
             return res.json({
-                rutinas: resultados 
+                rutinas: resultados
             });
         } else {
-            
+
             return res.status(404).json({ message: 'No se encontraron rutinas para esta persona' });
         }
     } catch (error) {
@@ -61,7 +61,7 @@ exports.obtenerRutinasFree = async (req, res) => {
         const resultados = await listarRutinasFree();
 
         if (resultados && resultados.length > 0) {
-            
+
             return res.json({ rutinas: resultados });
         } else {
             return res.status(404).json({ message: 'Rutinas no encontrados' });

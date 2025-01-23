@@ -16,7 +16,7 @@ const fraseController = require('../controllers/fraseController')
 
 // Ruta para obtener los menús de una persona por su id_persona
 router.get('/getMenus', menuController.obtenerMenus );
-router.post('/menusByIdPersona', menuController.obtenerMenusByIdPersona ); //Probar
+router.post('/menusByIdAcceso', menuController.obtenerMenusByIdAcceso ); 
 //Entrenador
 router.post('/getEntrenadorById', entrenadorController.obtenerEntrenadorByIdPersona );
 router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
@@ -25,6 +25,12 @@ router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
 router.get('/getAtletas', atletaController.obtenerAtletas );
 //Ejercicio
 router.post('/getEjercicioByGrupoMuscular', ejercicioController.getEjercicioPorGrupoMuscular );
+router.post('/getEjercicioByIdEjercicio', ejercicioController.getEjercicioById );
+router.post('/updateEjercicio', ejercicioController.updateEjercicio );
+router.post('/deleteEjercicio', ejercicioController.deleteEjercicio );
+// by id_ejercicio
+// editar
+//borrar
 //Tipo de repeticion de ejercicio
 router.get('/getRepeticion', repeticionController.obtenerRepeticion );
 //Gimnasios

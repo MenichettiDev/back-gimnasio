@@ -1,5 +1,5 @@
 // Importar el servicio necesario para la consulta
-const { listarAtletas, listarAtletasPorIdEntrenador, fraseAleatoria} = require('../services/fraseService');
+const {  fraseAleatoria} = require('../services/fraseService');
 
 
 exports.obtenerFraseAleatoria = async (req, res) => {
@@ -8,13 +8,13 @@ exports.obtenerFraseAleatoria = async (req, res) => {
         const resultados = await fraseAleatoria();
 
         if (resultados && resultados.length > 0) {
-            return res.json({ frase: resultados });
+            return res.json( resultados[0] );
         } else {
-            return res.status(404).json({ message: 'frase no encontrada' });
+            return res.status(404).json( 'frase no encontrada');
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json( 'Error en la base de datos' );
     }
 };
 
