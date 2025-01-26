@@ -21,6 +21,40 @@ const listarEjercicioById = ( id_ejercicio ) => {
     });
 };
 
+const crearEjercicio = (nuevoEjercicio) => {
+    return new Promise((resolve, reject) => {
+        const queryInsertEjercicio = `
+            INSERT INTO tb_ejercicios (
+                id_entrenador, 
+                id_grupo_muscular, 
+                nombre, 
+                img_1, 
+                img_2, 
+                img_3, 
+                descripcion, 
+                link_video
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        `; // Inserta un nuevo ejercicio en la tabla
+
+        const { 
+            id_entrenador, 
+            id_grupo_muscular, 
+            nombre, 
+            img_1, 
+            img_2, 
+            img_3, 
+            descripcion, 
+            link_video 
+        } = nuevoEjercicio;
+
+        conexion.query(queryInsertEjercicio, [id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video], (error, resultados) => {
+            if (error) return reject(error);
+            resolve(resultados.insertId); // Devuelve el ID del nuevo ejercicio creado
+        });
+    });
+};
+
+
 const actualizarEjercicio = ( ejercicio ) => {
     return new Promise((resolve, reject) => {
         const queryUpdateEjercicio = `
@@ -63,6 +97,7 @@ module.exports = {
     listarEjercicioPorGrupoMuscular,
     listarEjercicioById,
     actualizarEjercicio,
-    eliminarEjercicioPorId
+    eliminarEjercicioPorId,
+    crearEjercicio
 
 };

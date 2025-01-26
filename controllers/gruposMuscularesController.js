@@ -9,7 +9,7 @@ exports.obtenerGruposMusculares = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             
-            return res.json({ gruposMusculares: resultados });
+            return res.json( resultados );
         } else {
             return res.status(404).json({ message: 'Grupos musculares no encontrados' });
         }

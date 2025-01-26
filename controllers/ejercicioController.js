@@ -1,6 +1,6 @@
 
 // Importar el servicio necesario para la consulta
-const { listarEjercicioPorGrupoMuscular, actualizarEjercicio, eliminarEjercicioPorId, listarEjercicioById } = require('../services/ejercicioService');
+const { listarEjercicioPorGrupoMuscular, actualizarEjercicio, eliminarEjercicioPorId, listarEjercicioById, crearEjercicio } = require('../services/ejercicioService');
 
 
 exports.getEjercicioById = async (req, res) => {
@@ -46,9 +46,7 @@ exports.getEjercicioPorGrupoMuscular = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             // Si se encuentran atletas, devolver los datos
-            return res.json({
-                ejercicios: resultados // Retornar los resultados de los atletas
-            });
+            return res.json( resultados  );
         } else {
             // Si no se encuentran atletas, devolver un mensaje adecuado
             return res.status(404).json({ message: 'No se encontraron ejercicios para este grupo muscular' });
@@ -58,6 +56,30 @@ exports.getEjercicioPorGrupoMuscular = async (req, res) => {
         return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
+
+exports.createEjercicio = async (req, res) => {
+    const { id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video } = req.body;
+
+    try {
+        // Crear objeto del nuevo ejercicio con los datos proporcionados
+        const nuevoEjercicio = { id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video };
+
+        // Llamar al servicio para crear el ejercicio
+        const insertId = await crearEjercicio(nuevoEjercicio);
+
+        if (insertId) {
+            // Si se creó correctamente, devolver un mensaje de éxito junto con el ID generado
+            return res.status(201).json({ message: 'Ejercicio creado exitosamente', id: insertId });
+        } else {
+            // Si no se creó por alguna razón inesperada, devolver un mensaje adecuado
+            return res.status(400).json({ message: 'No se pudo crear el ejercicio' });
+        }
+    } catch (error) {
+        console.error('Error al crear el ejercicio:', error);
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
+    }
+};
+
 
 
 exports.updateEjercicio = async (req, res) => {
