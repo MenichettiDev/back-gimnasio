@@ -44,9 +44,12 @@ router.get('/getGruposMusculares', gruposMuscularesController.obtenerGruposMuscu
 router.post('/getMembresiasByIdGimnaiso', membresiaController.obtenerMembresiaByGimnasio );
 router.get('/getMembresias', membresiaController.obtenerMembresias );
 //Rutinas
+router.get('/getRutinasFree', rutinaController.obtenerRutinasFree );
 router.post('/getRutinaByIdAtleta', rutinaController.obtenerRutinaByIdAtleta );
 router.post('/getRutinaByIdCreador', rutinaController.obtenerRutinaByIdCreador );
-router.get('/getRutinasFree', rutinaController.obtenerRutinasFree );
+router.post('/crearRutinaYAsignarAtleta', rutinaController.crearRutinaYAsignarAtleta );
+router.post('/editarRutina', rutinaController.editarRutinaYAsignarAtleta );
+router.post('/eliminarRutina', rutinaController.eliminarRutina );
 //Frase
 router.get('/getFraseAleatoria', fraseController.obtenerFraseAleatoria );
 
