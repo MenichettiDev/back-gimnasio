@@ -78,18 +78,19 @@ exports.obtenerRutinasFree = async (req, res) => {
 exports.crearRutinaYAsignarAtleta = async (req, res) => {
     try {
         // Obtener los datos del cuerpo de la solicitud
-        const { rutina, id_atleta, id_grupo_muscular, id_ejercicio, fecha_asignacion } = req.body;
+        const { rutina, ejercicios, fecha_asignacion } = req.body;
+        console.log( rutina, ejercicios, fecha_asignacion );
 
         // Validación de los parámetros recibidos
-        if (!rutina || !id_atleta || !id_grupo_muscular || !id_ejercicio || !fecha_asignacion) {
+        if (!rutina || !ejercicios || !fecha_asignacion) {
             return res.status(400).json({ message: 'Faltan parámetros requeridos' });
         }
 
         // Llamar al servicio que crea la rutina y asigna los datos
-        const resultado = await crearRutinaYAsignarAtleta(rutina, id_atleta, id_grupo_muscular, id_ejercicio, fecha_asignacion);
+        const resultado = await crearRutinaYAsignarAtleta(rutina, ejercicios, fecha_asignacion);
 
         // Si la operación es exitosa, devolver el mensaje de éxito
-        return res.status(201).json({ message: resultado });
+        return res.status(201).json( resultado );
     } catch (error) {
         // Si hay un error, mostrar el mensaje de error
         console.error('Error al crear la rutina:', error);
@@ -147,65 +148,31 @@ exports.eliminarRutina = async (req, res) => {
 
 
 
-//{  =========================OBJETO PARA PROBAR CREAR RUTIMA ATLETA=========================
+// {
 //     "rutina": {
-//         "id_creador": 1,
-//         "nombre": "Rutina de prueba",
-//         "cantidad_dias": 5,
-//         "nivel_atleta": "Intermedio",
-//         "objetivo": "Resistencia",
-//         "descripcion": "Rutina centrada en el aumento de fuerza para atletas intermedios."
+//       "id_creador": 1,
+//       "nombre": "Rutina de prueba",
+//       "cantidad_dias": 5,
+//       "nivel_atleta": "Intermedio",
+//       "objetivo": "Resistencia",
+//       "descripcion": "Rutina centrada en el aumento de fuerza para atletas intermedios.",
+//       "id_atleta": 1
 //     },
-//     "id_atleta": 1,
-//     "id_grupo_muscular": [1, 2],
-//     "id_ejercicio": [
-//         {
-//             "id_grupo_muscular": 1,
-//             "ejercicios": [
-//                 { "id_ejercicio": 1, "id_repeticion": 2 },
-//                 { "id_ejercicio": 2, "id_repeticion": 1 }
-//             ]
-//         },
-//         {
-//             "id_grupo_muscular": 2,
-//             "ejercicios": [
-//                 { "id_ejercicio": 39, "id_repeticion": 3 },
-//                 { "id_ejercicio": 38, "id_repeticion": 4 }
-//             ]
-//         }
+//     "ejercicios": [
+//       {
+//         "dia": 1,
+//         "ejercicios": [
+//           {"id_grupo_muscular": 2, "id_ejercicio": 1, "id_repeticion": 2 },
+//           {"id_grupo_muscular": 5, "id_ejercicio": 14, "id_repeticion": 4 },
+//         ]
+//       },
+//       {
+//         "dia": 2,
+//         "ejercicios": [
+//           {"id_grupo_muscular": 3, "id_ejercicio": 13, "id_repeticion": 6 },
+//           {"id_grupo_muscular": 13, "id_ejercicio": 122, "id_repeticion": 3 },
+//         ]
+//       }
 //     ],
 //     "fecha_asignacion": "2025-02-13"
-// }
-
-//{  =========================OBJETO PARA PROBAR EDITAR RUTIMA ATLETA=========================
-// {
-//     "id_rutina": 13,
-//     "rutina": {
-//         "id_creador": 1,
-//         "nombre": "Rutina actualizada",
-//         "cantidad_dias": 4,
-//         "nivel_atleta": "Avanzado",
-//         "objetivo": "Musculacion",
-//         "descripcion": "Rutina modificada para definición muscular en atletas avanzados."
-//     },
-//     "id_atleta": 1,
-//     "id_grupo_muscular": [1, 3],
-//     "id_ejercicio": [
-//         {
-//             "id_grupo_muscular": 1,
-//             "ejercicios": [
-//                 { "id_ejercicio": 3, "id_repeticion": 3 },
-//                 { "id_ejercicio": 4, "id_repeticion": 2 }
-//             ]
-//         },
-//         {
-//             "id_grupo_muscular": 3,
-//             "ejercicios": [
-//                 { "id_ejercicio": 17, "id_repeticion": 4 },
-//                 { "id_ejercicio":16, "id_repeticion": 3 }
-//             ]
-//         }
-//     ],
-//     "fecha_asignacion": "2025-01-26"
-// }
-
+//   }

@@ -31,7 +31,7 @@ const listarRutinaByIdAtleta = (id_atleta) => {
     });
 };
 
-const crearRutinaYAsignarAtleta = (rutina, id_atleta, id_grupo_muscular, id_ejercicio, fecha_asignacion) => {
+const crearRutinaYAsignarAtleta = (rutina, ejercicios, fecha_asignacion) => {
     return new Promise((resolve, reject) => {
         // Comienza la transacción
         conexion.beginTransaction((err) => {
@@ -58,57 +58,34 @@ const crearRutinaYAsignarAtleta = (rutina, id_atleta, id_grupo_muscular, id_ejer
                     INSERT INTO tb_rutina_atleta (id_rutina, id_atleta, fecha_asignacion)
                     VALUES (?, ?, ?);
                 `;
-                conexion.query(queryRutinaAtleta, [id_rutina, id_atleta, fecha_asignacion], (error) => {
+                conexion.query(queryRutinaAtleta, [id_rutina, rutina.id_atleta, fecha_asignacion], (error) => {
                     if (error) {
                         return conexion.rollback(() => {
                             reject('Error al asignar rutina al atleta');
                         });
                     }
 
-                    // 3. Asignar los grupos musculares
-                    const groupQueries = id_grupo_muscular.map(grupo => {
-                        return new Promise((resolve, reject) => {
-                            const queryGrupoMuscular = `
-                                INSERT INTO tb_rutina_grupo_muscular (id_rutina, id_grupo_muscular)
-                                VALUES (?, ?);
-                            `;
-                            conexion.query(queryGrupoMuscular, [id_rutina, grupo], (error) => {
-                                if (error) {
-                                    return reject('Error al asignar grupo muscular');
-                                }
-                                resolve();
+                    // 3. Procesar los ejercicios por día
+                    const procesarEjercicios = ejercicios.flatMap(dia => {
+                        return dia.ejercicios.map(ejercicio => {
+                            return new Promise((resolve, reject) => {
+                                const queryEjercicio = `
+                                    INSERT INTO tb_rutina_ejercicios (id_rutina, id_grupo_muscular, id_ejercicios, id_repeticion, dia)
+                                    VALUES (?, ?, ?, ?, ?);
+                                `;
+                                conexion.query(queryEjercicio, [id_rutina, ejercicio.id_grupo_muscular, ejercicio.id_ejercicio, ejercicio.id_repeticion, dia.dia], (error) => {
+                                    if (error) {
+                                        return reject(`Error al asignar ejercicio del día ${dia.dia}: ${error.message}`);
+                                    }
+                                    resolve();
+                                });
                             });
                         });
                     });
 
-                    // Esperamos que todas las consultas de grupos musculares se completen
-                    Promise.all(groupQueries).then(() => {
-                        // 4. Asignar los ejercicios, asociándolos a sus grupos musculares
-                        const exerciseQueries = id_ejercicio.map(grupoEjercicio => {
-                            const { id_grupo_muscular, ejercicios } = grupoEjercicio;
-                            
-                            // Para cada ejercicio dentro del grupo muscular
-                            const ejercicioQueries = ejercicios.map(ejercicio => {
-                                return new Promise((resolve, reject) => {
-                                    const queryEjercicio = `
-                                    INSERT INTO tb_rutina_ejercicios (id_rutina, id_ejercicios, id_repeticion)
-                                    VALUES (?, ?, ?);
-                                    `;
-                                    conexion.query(queryEjercicio, [id_rutina, ejercicio.id_ejercicio, ejercicio.id_repeticion], (error) => {
-                                        if (error) {
-                                            return reject('Error al asignar ejercicio: ' + error.message);
-                                        }
-                                        resolve();
-                                    });
-                                });
-                            });
-
-                            // Esperamos que todas las consultas de ejercicios se completen para este grupo muscular
-                            return Promise.all(ejercicioQueries);
-                        });
-
-                        // Esperamos que todas las consultas de ejercicios se completen
-                        Promise.all(exerciseQueries).then(() => {
+                    // Esperar a que todos los ejercicios se procesen
+                    Promise.all(procesarEjercicios)
+                        .then(() => {
                             // Si todo fue exitoso, commit la transacción
                             conexion.commit((err) => {
                                 if (err) {
@@ -118,16 +95,12 @@ const crearRutinaYAsignarAtleta = (rutina, id_atleta, id_grupo_muscular, id_ejer
                                 }
                                 resolve('Rutina creada y asignada exitosamente');
                             });
-                        }).catch(err => {
+                        })
+                        .catch(err => {
                             conexion.rollback(() => {
                                 reject(err);
                             });
                         });
-                    }).catch(err => {
-                        conexion.rollback(() => {
-                            reject(err);
-                        });
-                    });
                 });
             });
         });

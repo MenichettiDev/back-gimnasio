@@ -9,7 +9,7 @@ exports.obtenerRepeticion = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             // Si se encuentra el entrenador, devolver los datos
-            return res.json({ repeticiones: resultados });
+            return res.json( resultados );
         } else {
             // Si no se encuentra el entrenador, devolver un mensaje adecuado
             return res.status(404).json({ message: 'Repeticiones no encontradas' });
