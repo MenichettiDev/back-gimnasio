@@ -1,7 +1,8 @@
 // Importar el servicio necesario para la consulta
 const { listarRutinaByIdAtleta, listarRutinaByIdCreador,
     listarRutinasFree, crearRutinaYAsignarAtleta,
-    editarRutinaYAsignarAtleta, eliminarRutinaConRelaciones } = require('../services/rutinaService');
+    editarRutinaYAsignarAtleta, eliminarRutinaConRelaciones, 
+    listarRutinaByIdRutina} = require('../services/rutinaService');
 
 exports.obtenerRutinaByIdAtleta = async (req, res) => {
     const { id_atleta } = req.body;
@@ -57,6 +58,33 @@ exports.obtenerRutinaByIdCreador = async (req, res) => {
     }
 };
 
+exports.obtenerRutinaByIdRutina = async (req, res) => {
+    const { id_rutina } = req.body;
+
+    if (!id_rutina) {
+
+        return res.status(400).json({ message: 'El id_rutina es obligatorio' });
+    }
+
+    try {
+
+        const resultados = await listarRutinaByIdRutina(id_rutina);
+
+        if (resultados && resultados.length > 0) {
+
+            return res.json({
+                rutinas: resultados
+            });
+        } else {
+
+            return res.status(404).json({ message: 'No se encontraron rutinas para ese id' });
+        }
+    } catch (error) {
+        console.error('Error en la consulta:', error);
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
+    }
+};
+
 exports.obtenerRutinasFree = async (req, res) => {
 
     try {
@@ -78,16 +106,16 @@ exports.obtenerRutinasFree = async (req, res) => {
 exports.crearRutinaYAsignarAtleta = async (req, res) => {
     try {
         // Obtener los datos del cuerpo de la solicitud
-        const { rutina, ejercicios, fecha_asignacion } = req.body;
-        console.log( rutina, ejercicios, fecha_asignacion );
+        const { rutina, ejercicios } = req.body;
+        console.log( rutina, ejercicios );
 
         // Validación de los parámetros recibidos
-        if (!rutina || !ejercicios || !fecha_asignacion) {
+        if (!rutina || !ejercicios ) {
             return res.status(400).json({ message: 'Faltan parámetros requeridos' });
         }
 
         // Llamar al servicio que crea la rutina y asigna los datos
-        const resultado = await crearRutinaYAsignarAtleta(rutina, ejercicios, fecha_asignacion);
+        const resultado = await crearRutinaYAsignarAtleta(rutina, ejercicios );
 
         // Si la operación es exitosa, devolver el mensaje de éxito
         return res.status(201).json( resultado );

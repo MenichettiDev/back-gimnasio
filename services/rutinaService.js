@@ -20,6 +20,95 @@ const listarRutinaByIdCreador = (id_persona) => {
     });
 };
 
+const listarRutinaByIdRutina = (id_rutina) => {
+    return new Promise((resolve, reject) => {
+        // Consulta para obtener los datos generales de la rutina
+        const queryRutina = `
+            SELECT 
+                r.id_rutina,
+                r.id_creador,
+                r.nombre,
+                r.cantidad_dias,
+                r.nivel_atleta,
+                r.objetivo,
+                r.descripcion,
+                ra.id_atleta,
+                ra.fecha_asignacion
+            FROM tb_rutina r
+            LEFT JOIN tb_rutina_atleta ra ON r.id_rutina = ra.id_rutina
+            WHERE r.id_rutina = ?;
+        `;
+
+        // Consulta para obtener los ejercicios de la rutina por día
+        const queryEjercicios = `
+            SELECT 
+                dia,
+                id_grupo_muscular,
+                id_ejercicios AS id_ejercicio,
+                id_repeticion
+            FROM tb_rutina_ejercicios
+            WHERE id_rutina = ?
+            ORDER BY dia ASC;
+        `;
+
+        // Ejecutar la primera consulta para obtener los datos generales de la rutina
+        conexion.query(queryRutina, [id_rutina], (error, resultadosRutina) => {
+            if (error) {
+                return reject('Error al consultar los datos de la rutina');
+            }
+
+            // Si no se encuentra la rutina, rechazar la promesa
+            if (resultadosRutina.length === 0) {
+                return reject('No se encontró ninguna rutina con el ID proporcionado');
+            }
+
+            const rutina = resultadosRutina[0]; // Datos generales de la rutina
+
+            // Ejecutar la segunda consulta para obtener los ejercicios
+            conexion.query(queryEjercicios, [id_rutina], (error, resultadosEjercicios) => {
+                if (error) {
+                    return reject('Error al consultar los ejercicios de la rutina');
+                }
+
+                // Agrupar los ejercicios por día
+                const ejerciciosPorDia = resultadosEjercicios.reduce((acc, ejercicio) => {
+                    if (!acc[ejercicio.dia]) {
+                        acc[ejercicio.dia] = [];
+                    }
+                    acc[ejercicio.dia].push({
+                        id_grupo_muscular: ejercicio.id_grupo_muscular,
+                        id_ejercicio: ejercicio.id_ejercicio,
+                        id_repeticion: ejercicio.id_repeticion,
+                    });
+                    return acc;
+                }, {});
+
+                // Formatear los ejercicios en una estructura de días
+                const dias = Object.keys(ejerciciosPorDia).map(dia => ({
+                    dia: parseInt(dia),
+                    ejercicios: ejerciciosPorDia[dia],
+                }));
+
+                // Construir el objeto final de la rutina
+                const rutinaCompleta = {
+                    id_rutina: rutina.id_rutina,
+                    id_creador: rutina.id_creador,
+                    nombre: rutina.nombre,
+                    cantidad_dias: rutina.cantidad_dias,
+                    nivel_atleta: rutina.nivel_atleta,
+                    objetivo: rutina.objetivo,
+                    descripcion: rutina.descripcion,
+                    id_atleta: rutina.id_atleta,
+                    fecha_asignacion: rutina.fecha_asignacion,
+                    dias: dias,
+                };
+
+                resolve(rutinaCompleta); // Devolver la rutina completa
+            });
+        });
+    });
+};
+
 const listarRutinaByIdAtleta = (id_atleta) => {
     return new Promise((resolve, reject) => {
         const queryRutina = `SELECT * FROM tb_rutina r, tb_rutina_atleta i 
@@ -31,7 +120,7 @@ const listarRutinaByIdAtleta = (id_atleta) => {
     });
 };
 
-const crearRutinaYAsignarAtleta = (rutina, ejercicios, fecha_asignacion) => {
+const crearRutinaYAsignarAtleta = (rutina, ejercicios ) => {
     return new Promise((resolve, reject) => {
         // Comienza la transacción
         conexion.beginTransaction((err) => {
@@ -58,7 +147,7 @@ const crearRutinaYAsignarAtleta = (rutina, ejercicios, fecha_asignacion) => {
                     INSERT INTO tb_rutina_atleta (id_rutina, id_atleta, fecha_asignacion)
                     VALUES (?, ?, ?);
                 `;
-                conexion.query(queryRutinaAtleta, [id_rutina, rutina.id_atleta, fecha_asignacion], (error) => {
+                conexion.query(queryRutinaAtleta, [id_rutina, rutina.id_atleta, rutina.fecha_asignacion], (error) => {
                     if (error) {
                         return conexion.rollback(() => {
                             reject('Error al asignar rutina al atleta');
@@ -324,6 +413,7 @@ module.exports = {
     listarRutinaByIdAtleta,
     crearRutinaYAsignarAtleta,
     editarRutinaYAsignarAtleta,
-    eliminarRutinaConRelaciones
+    eliminarRutinaConRelaciones,
+    listarRutinaByIdRutina
 
 };

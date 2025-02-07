@@ -47,6 +47,7 @@ router.get('/getMembresias', membresiaController.obtenerMembresias );
 router.get('/getRutinasFree', rutinaController.obtenerRutinasFree );
 router.post('/getRutinaByIdAtleta', rutinaController.obtenerRutinaByIdAtleta );
 router.post('/getRutinaByIdCreador', rutinaController.obtenerRutinaByIdCreador );
+router.post('/getRutinaByIdRutina', rutinaController.obtenerRutinaByIdRutina );
 router.post('/crearRutinaYAsignarAtleta', rutinaController.crearRutinaYAsignarAtleta );
 router.post('/editarRutina', rutinaController.editarRutinaYAsignarAtleta );
 router.post('/eliminarRutina', rutinaController.eliminarRutina );
