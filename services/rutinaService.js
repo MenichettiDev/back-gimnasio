@@ -107,10 +107,7 @@ const crearRutinaYAsignarAtleta = (rutina, ejercicios, fecha_asignacion) => {
     });
 };
 
-
-
-
-const editarRutinaYAsignarAtleta = (id_rutina, rutina, id_atleta, id_grupo_muscular, id_ejercicio, fecha_asignacion) => {
+const editarRutinaYAsignarAtleta = (id_rutina, rutina, ejercicios, fecha_asignacion) => {
     return new Promise((resolve, reject) => {
         // Comienza la transacción
         conexion.beginTransaction((err) => {
@@ -137,97 +134,119 @@ const editarRutinaYAsignarAtleta = (id_rutina, rutina, id_atleta, id_grupo_muscu
                     SET id_atleta = ?, fecha_asignacion = ?
                     WHERE id_rutina = ?;
                 `;
-                conexion.query(queryActualizarRutinaAtleta, [id_atleta, fecha_asignacion, id_rutina], (error) => {
+                conexion.query(queryActualizarRutinaAtleta, [rutina.id_atleta, fecha_asignacion, id_rutina], (error) => {
                     if (error) {
                         return conexion.rollback(() => {
                             reject('Error al actualizar la asignación de la rutina al atleta: ' + error.message);
                         });
                     }
 
-                    // 3. Eliminar los grupos musculares actuales para esta rutina
-                    const queryEliminarGruposMusculares = `
-                        DELETE FROM tb_rutina_grupo_muscular WHERE id_rutina = ?;
+                    // 3. Obtener los ejercicios actuales para esta rutina
+                    const queryEjerciciosActuales = `
+                        SELECT id_ejercicios, id_repeticion, dia FROM tb_rutina_ejercicios WHERE id_rutina = ?;
                     `;
-                    conexion.query(queryEliminarGruposMusculares, [id_rutina], (error) => {
+                    conexion.query(queryEjerciciosActuales, [id_rutina], (error, ejerciciosActuales) => {
                         if (error) {
                             return conexion.rollback(() => {
-                                reject('Error al eliminar grupos musculares: ' + error.message);
+                                reject('Error al obtener ejercicios actuales: ' + error.message);
                             });
                         }
 
-                        // 4. Insertar los nuevos grupos musculares
-                        const groupQueries = id_grupo_muscular.map((grupo) => {
+                        // Convertir los resultados en un mapa para facilitar la comparación
+                        const ejerciciosActualesMap = new Map();
+                        ejerciciosActuales.forEach(ejercicio => {
+                            ejerciciosActualesMap.set(ejercicio.id_ejercicio, ejercicio);
+                        });
+
+                        // 4. Procesar los nuevos ejercicios
+                        const nuevosEjercicios = ejercicios.flatMap(dia => 
+                            dia.ejercicios.map(ejercicio => ({
+                                id_ejercicio: ejercicio.id_ejercicio,
+                                id_repeticion: ejercicio.id_repeticion,
+                                dia: dia.dia
+                            }))
+                        );
+
+                        // Identificar qué ejercicios mantener, eliminar o agregar
+                        const ejerciciosAMantener = [];
+                        const ejerciciosAEliminar = [];
+                        const ejerciciosAAgregar = [];
+
+                        nuevosEjercicios.forEach(nuevoEjercicio => {
+                            if (ejerciciosActualesMap.has(nuevoEjercicio.id_ejercicio)) {
+                                const ejercicioActual = ejerciciosActualesMap.get(nuevoEjercicio.id_ejercicio);
+                                if (ejercicioActual.id_repeticion !== nuevoEjercicio.id_repeticion || ejercicioActual.dia !== nuevoEjercicio.dia) {
+                                    // El ejercicio existe pero ha cambiado algún dato -> actualizar
+                                    ejerciciosAMantener.push(nuevoEjercicio);
+                                } else {
+                                    // El ejercicio existe y no ha cambiado -> mantener
+                                    ejerciciosAMantener.push(nuevoEjercicio);
+                                }
+                                ejerciciosActualesMap.delete(nuevoEjercicio.id_ejercicio); // Eliminar del mapa para identificar eliminaciones
+                            } else {
+                                // El ejercicio es nuevo -> agregar
+                                ejerciciosAAgregar.push(nuevoEjercicio);
+                            }
+                        });
+
+                        // Los ejercicios restantes en el mapa son los que deben eliminarse
+                        ejerciciosAEliminar.push(...ejerciciosActualesMap.values());
+
+                        // 5. Realizar las operaciones necesarias
+                        const eliminarQueries = ejerciciosAEliminar.map(ejercicio => {
                             return new Promise((resolve, reject) => {
-                                const queryGrupoMuscular = `
-                                    INSERT INTO tb_rutina_grupo_muscular (id_rutina, id_grupo_muscular)
-                                    VALUES (?, ?);
+                                const queryEliminarEjercicio = `
+                                    DELETE FROM tb_rutina_ejercicios
+                                    WHERE id_rutina = ? AND id_ejercicio = ?;
                                 `;
-                                conexion.query(queryGrupoMuscular, [id_rutina, grupo], (error) => {
-                                    if (error) {
-                                        return reject('Error al asignar grupo muscular: ' + error.message);
-                                    }
+                                conexion.query(queryEliminarEjercicio, [id_rutina, ejercicio.id_ejercicio], (error) => {
+                                    if (error) return reject('Error al eliminar ejercicio: ' + error.message);
                                     resolve();
                                 });
                             });
                         });
 
-                        Promise.all(groupQueries)
-                            .then(() => {
-                                // 5. Eliminar los ejercicios actuales para esta rutina
-                                const queryEliminarEjercicios = `
-                                    DELETE FROM tb_rutina_ejercicios WHERE id_rutina = ?;
+                        const agregarQueries = ejerciciosAAgregar.map(ejercicio => {
+                            return new Promise((resolve, reject) => {
+                                const queryAgregarEjercicio = `
+                                    INSERT INTO tb_rutina_ejercicios (id_rutina, id_ejercicios, id_repeticion, dia)
+                                    VALUES (?, ?, ?, ?);
                                 `;
-                                conexion.query(queryEliminarEjercicios, [id_rutina], (error) => {
-                                    if (error) {
+                                conexion.query(queryAgregarEjercicio, [id_rutina, ejercicio.id_ejercicio, ejercicio.id_repeticion, ejercicio.dia], (error) => {
+                                    if (error) return reject('Error al agregar ejercicio: ' + error.message);
+                                    resolve();
+                                });
+                            });
+                        });
+
+                        const actualizarQueries = ejerciciosAMantener.map(ejercicio => {
+                            return new Promise((resolve, reject) => {
+                                const queryActualizarEjercicio = `
+                                    UPDATE tb_rutina_ejercicios
+                                    SET id_repeticion = ?, dia = ?
+                                    WHERE id_rutina = ? AND id_ejercicios = ?;
+                                `;
+                                conexion.query(queryActualizarEjercicio, [ejercicio.id_repeticion, ejercicio.dia, id_rutina, ejercicio.id_ejercicio], (error) => {
+                                    if (error) return reject('Error al actualizar ejercicio: ' + error.message);
+                                    resolve();
+                                });
+                            });
+                        });
+
+                        // Ejecutar todas las operaciones
+                        Promise.all([...eliminarQueries, ...agregarQueries, ...actualizarQueries])
+                            .then(() => {
+                                // Commit la transacción
+                                conexion.commit((err) => {
+                                    if (err) {
                                         return conexion.rollback(() => {
-                                            reject('Error al eliminar ejercicios: ' + error.message);
+                                            reject('Error al hacer commit de la transacción: ' + err.message);
                                         });
                                     }
-
-                                    // 6. Insertar los nuevos ejercicios asociados a los grupos musculares
-                                    const exerciseQueries = id_ejercicio.map((grupoEjercicio) => {
-                                        const { id_grupo_muscular, ejercicios } = grupoEjercicio;
-
-                                        // Insertar cada ejercicio dentro del grupo muscular
-                                        const ejercicioQueries = ejercicios.map((ejercicio) => {
-                                            return new Promise((resolve, reject) => {
-                                                const queryEjercicio = `
-                                                    INSERT INTO tb_rutina_ejercicios (id_rutina, id_ejercicios, id_repeticion)
-                                                    VALUES (?, ?, ?);
-                                                `;
-                                                conexion.query(queryEjercicio, [id_rutina, ejercicio.id_ejercicio, ejercicio.id_repeticion], (error) => {
-                                                    if (error) {
-                                                        return reject('Error al asignar ejercicio: ' + error.message);
-                                                    }
-                                                    resolve();
-                                                });
-                                            });
-                                        });
-
-                                        // Esperar a que todos los ejercicios del grupo se inserten
-                                        return Promise.all(ejercicioQueries);
-                                    });
-
-                                    Promise.all(exerciseQueries)
-                                        .then(() => {
-                                            // Si todo fue exitoso, commit la transacción
-                                            conexion.commit((err) => {
-                                                if (err) {
-                                                    return conexion.rollback(() => {
-                                                        reject('Error al hacer commit de la transacción: ' + err.message);
-                                                    });
-                                                }
-                                                resolve('Rutina editada y asignada exitosamente');
-                                            });
-                                        })
-                                        .catch((err) => {
-                                            conexion.rollback(() => {
-                                                reject(err);
-                                            });
-                                        });
+                                    resolve('Rutina editada y asignada exitosamente');
                                 });
                             })
-                            .catch((err) => {
+                            .catch(err => {
                                 conexion.rollback(() => {
                                     reject(err);
                                 });
@@ -245,7 +264,7 @@ const eliminarRutinaConRelaciones = (id_rutina) => {
         // Comienza la transacción
         conexion.beginTransaction((err) => {
             if (err) {
-                return reject('Error al iniciar la transacción');
+                return reject('Error al iniciar la transacción: ' + err.message);
             }
 
             // 1. Eliminar las relaciones de la rutina en tb_rutina_ejercicios
@@ -259,48 +278,36 @@ const eliminarRutinaConRelaciones = (id_rutina) => {
                     });
                 }
 
-                // 2. Eliminar las relaciones de la rutina en tb_rutina_grupo_muscular
-                const queryEliminarGruposMusculares = `
-                    DELETE FROM tb_rutina_grupo_muscular WHERE id_rutina = ?;
+                // 2. Eliminar la relación de la rutina con el atleta en tb_rutina_atleta
+                const queryEliminarRutinaAtleta = `
+                    DELETE FROM tb_rutina_atleta WHERE id_rutina = ?;
                 `;
-                conexion.query(queryEliminarGruposMusculares, [id_rutina], (error) => {
+                conexion.query(queryEliminarRutinaAtleta, [id_rutina], (error) => {
                     if (error) {
                         return conexion.rollback(() => {
-                            reject('Error al eliminar grupos musculares asociados a la rutina: ' + error.message);
+                            reject('Error al eliminar la relación de la rutina con el atleta: ' + error.message);
                         });
                     }
 
-                    // 3. Eliminar la relación de la rutina con el atleta en tb_rutina_atleta
-                    const queryEliminarRutinaAtleta = `
-                        DELETE FROM tb_rutina_atleta WHERE id_rutina = ?;
+                    // 3. Eliminar la rutina de tb_rutina
+                    const queryEliminarRutina = `
+                        DELETE FROM tb_rutina WHERE id_rutina = ?;
                     `;
-                    conexion.query(queryEliminarRutinaAtleta, [id_rutina], (error) => {
+                    conexion.query(queryEliminarRutina, [id_rutina], (error) => {
                         if (error) {
                             return conexion.rollback(() => {
-                                reject('Error al eliminar la relación de la rutina con el atleta: ' + error.message);
+                                reject('Error al eliminar la rutina: ' + error.message);
                             });
                         }
 
-                        // 4. Eliminar la rutina de tb_rutina
-                        const queryEliminarRutina = `
-                            DELETE FROM tb_rutina WHERE id_rutina = ?;
-                        `;
-                        conexion.query(queryEliminarRutina, [id_rutina], (error) => {
-                            if (error) {
+                        // Commit si todo fue exitoso
+                        conexion.commit((err) => {
+                            if (err) {
                                 return conexion.rollback(() => {
-                                    reject('Error al eliminar la rutina: ' + error.message);
+                                    reject('Error al realizar commit de la transacción: ' + err.message);
                                 });
                             }
-
-                            // Commit si todo fue exitoso
-                            conexion.commit((err) => {
-                                if (err) {
-                                    return conexion.rollback(() => {
-                                        reject('Error al realizar commit de la transacción: ' + err.message);
-                                    });
-                                }
-                                resolve('Rutina y todas sus relaciones eliminadas exitosamente');
-                            });
+                            resolve('Rutina y todas sus relaciones eliminadas exitosamente');
                         });
                     });
                 });

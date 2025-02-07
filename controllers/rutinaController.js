@@ -102,10 +102,10 @@ exports.crearRutinaYAsignarAtleta = async (req, res) => {
 exports.editarRutinaYAsignarAtleta = async (req, res) => {
     try {
         // Obtener los datos del cuerpo de la solicitud
-        const { id_rutina, rutina, id_atleta, id_grupo_muscular, id_ejercicio, fecha_asignacion } = req.body;
+        const { id_rutina,  rutina, ejercicios, fecha_asignacion } = req.body;
 
         // Validación de los parámetros recibidos
-        if (!id_rutina || !rutina || !id_atleta || !id_grupo_muscular || !id_ejercicio || !fecha_asignacion) {
+        if (!id_rutina || !rutina || !ejercicios || !fecha_asignacion) {
             return res.status(400).json({ message: 'Faltan parámetros requeridos' });
         }
 
@@ -113,14 +113,12 @@ exports.editarRutinaYAsignarAtleta = async (req, res) => {
         const resultado = await editarRutinaYAsignarAtleta(
             id_rutina,
             rutina,
-            id_atleta,
-            id_grupo_muscular,
-            id_ejercicio,
+            ejercicios,
             fecha_asignacion
         );
 
         // Si la operación es exitosa, devolver el mensaje de éxito
-        return res.status(200).json({ message: resultado });
+        return res.status(200).json( resultado );
     } catch (error) {
         // Si hay un error, mostrar el mensaje de error
         console.error('Error al editar la rutina:', error);
