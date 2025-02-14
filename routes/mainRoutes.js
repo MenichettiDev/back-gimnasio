@@ -18,11 +18,13 @@ const fraseController = require('../controllers/fraseController')
 router.get('/getMenus', menuController.obtenerMenus );
 router.post('/menusByIdAcceso', menuController.obtenerMenusByIdAcceso ); 
 //Entrenador
-router.post('/getEntrenadorById', entrenadorController.obtenerEntrenadorByIdPersona );
+router.post('/getEntrenadorByIdPersona', entrenadorController.obtenerEntrenadorByIdPersona );
 router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
 //Atleta
 router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
 router.get('/getAtletas', atletaController.obtenerAtletas );
+router.post('/crearAtleta', atletaController.crearAtleta );
+router.post('/editarAtleta', atletaController.editarAtleta );
 //Ejercicio
 
 router.post('/crearEjercicio', ejercicioController.createEjercicio );

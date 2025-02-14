@@ -15,7 +15,7 @@ exports.obtenerEntrenadorByIdPersona = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             // Si se encuentra el entrenador, devolver los datos
-            return res.json({ message: 'Entrenador encontrado', entrenador: resultados[0] });
+            return res.json( resultados[0] );
         } else {
             // Si no se encuentra el entrenador, devolver un mensaje adecuado
             return res.status(404).json({ message: 'Entrenador no encontrado para esa persona' });
@@ -33,7 +33,7 @@ exports.obtenerEntrenadores = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             // Si se encuentra el entrenador, devolver los datos
-            return res.json({ entrenadores: resultados });
+            return res.json( resultados );
         } else {
             // Si no se encuentra el entrenador, devolver un mensaje adecuado
             return res.status(404).json({ message: 'Entrenadores no encontrados' });

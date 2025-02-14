@@ -35,10 +35,10 @@ exports.postLogin = async (req, res) => {
                 req.session.usuario = usuarioObtenido; //Acá se suarda el nombre de usuario
 
                 //Respondes con el usuario autenticado y mensaje de éxito
-                return res.json({ message: 'Login exitoso', usuario: req.session.usuario });
+                return res.json( req.session.usuario );
             } else {
                 //Si el médico no se encuentra indicamos el error
-                return res.status(404).json({ message: 'Médico no encontrado' });
+                return res.status(404).json({ message: 'User no encontrado' });
             }
         } else {
             //Si las credenciales son incorrectas lo indicamos
@@ -56,8 +56,7 @@ exports.getLogin = (req, res) => {
     if (req.session.isLoggedIn) {
         return res.json({
             message: 'Usuario autenticado',
-            nombre: req.session.nombre,
-            matricula: req.session.matricula
+            nombre: req.session.nombre
         });
     } else {
         return res.status(401).json({ message: 'No autenticado. Acceso denegado.' });

@@ -12,9 +12,9 @@ exports.obtenerGimnasioPorIdEntrenador = async (req, res) => {
         const resultados = await listarGimnasioPorIdEntrenador(id_entrenador);
 
         if (resultados && resultados.length > 0) {
-            return res.json({
-                gimnasios: resultados // Retornar los resultados de los atletas
-            });
+            return res.json(
+                resultados // Retornar los resultados de los atletas
+            );
         } else {
             // Si no se encuentran atletas, devolver un mensaje adecuado
             return res.status(404).json({ message: 'No se encontraron gimnasios para este entrenador' });
@@ -32,7 +32,7 @@ exports.obtenerGimnasios = async (req, res) => {
         const resultados = await listarGimnasios();
 
         if (resultados && resultados.length > 0) {
-            return res.json({ gimnasios: resultados });
+            return res.json( resultados );
         } else {
             // Si no se encuentra el entrenador, devolver un mensaje adecuado
             return res.status(404).json({ message: 'Gimnasios no encontrados' });
