@@ -10,6 +10,7 @@ const gruposMuscularesController = require('../controllers/gruposMuscularesContr
 const membresiaController = require('../controllers/membresiaController')
 const rutinaController = require('../controllers/rutinaController')
 const fraseController = require('../controllers/fraseController')
+const formaPagoController = require('../controllers/formaPagoController')
 
 
 
@@ -57,7 +58,7 @@ router.post('/eliminarRutina', rutinaController.eliminarRutina );
 //Frase
 router.get('/getFraseAleatoria', fraseController.obtenerFraseAleatoria );
 // Rutas para las formas de pago
-router.get('/formas-pago', formaPagoController.obtenerFormasPago); // Listar todas las formas de pago
+router.get('/formas-pago', formaPagoController.obtenerFormaPago); // Listar todas las formas de pago
 router.get('/formas-pago/:id', formaPagoController.obtenerFormaPago); // Obtener una forma de pago por ID
 router.post('/formas-pago', formaPagoController.crearFormaPago); // Crear una nueva forma de pago
 router.put('/formas-pago/:id', formaPagoController.actualizarFormaPago); // Actualizar una forma de pago
