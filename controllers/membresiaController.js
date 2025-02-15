@@ -15,9 +15,8 @@ exports.obtenerMembresiaByGimnasio = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             
-            return res.json({
-                membresias: resultados 
-            });
+            return res.json( resultados 
+            );
         } else {
             
             return res.status(404).json({ message: 'No se encontraron membresias para ese gimnasio' });
@@ -36,7 +35,7 @@ exports.obtenerMembresias = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             
-            return res.json({ membresias: resultados });
+            return res.json( resultados );
         } else {
             return res.status(404).json({ message: 'Membresias no encontradas' });
         }

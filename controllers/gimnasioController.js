@@ -58,7 +58,7 @@ exports.obtenerGimnasioPorIdAtleta = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             return res.json(
-                resultados // Retornar los resultados de los atletas
+                resultados[0] // Retornar los resultados de los atletas
             );
         } else {
             // Si no se encuentran atletas, devolver un mensaje adecuado
