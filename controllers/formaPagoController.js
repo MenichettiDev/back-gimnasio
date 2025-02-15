@@ -24,7 +24,7 @@ exports.obtenerFormasPago = async (req, res) => {
 };
 
 // Controlador para obtener una forma de pago por su ID
-exports.obtenerFormaPago = async (req, res) => {
+exports.obtenerFormaPagoById = async (req, res) => {
     try {
         const { id } = req.params; // Obtener el ID de los parámetros de la URL
         const formaPago = await obtenerFormaPagoPorId(id);

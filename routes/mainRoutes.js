@@ -11,6 +11,7 @@ const membresiaController = require('../controllers/membresiaController')
 const rutinaController = require('../controllers/rutinaController')
 const fraseController = require('../controllers/fraseController')
 const formaPagoController = require('../controllers/formaPagoController')
+const pagoController = require('../controllers/pagoController')
 
 
 
@@ -58,12 +59,20 @@ router.post('/eliminarRutina', rutinaController.eliminarRutina );
 //Frase
 router.get('/getFraseAleatoria', fraseController.obtenerFraseAleatoria );
 // Rutas para las formas de pago
-router.get('/formas-pago', formaPagoController.obtenerFormaPago); // Listar todas las formas de pago
-router.get('/formas-pago/:id', formaPagoController.obtenerFormaPago); // Obtener una forma de pago por ID
+router.get('/getFormasPago', formaPagoController.obtenerFormasPago); // Listar todas las formas de pago
+router.get('/formas-pago/:id', formaPagoController.obtenerFormaPagoById); // Obtener una forma de pago por ID
 router.post('/formas-pago', formaPagoController.crearFormaPago); // Crear una nueva forma de pago
 router.put('/formas-pago/:id', formaPagoController.actualizarFormaPago); // Actualizar una forma de pago
 router.delete('/formas-pago/:id', formaPagoController.eliminarFormaPago); // Eliminar una forma de pago
 
+// Rutas para pagos
+router.post('/getPagosPorAtleta', pagoController.getPagosPorAtleta); // Obtener pagos por atleta
+router.post('/getPagoPorId', pagoController.getPagoPorId); // Obtener un pago por su ID
+router.post('/createPago', pagoController.createPago); // Crear un nuevo pago
+router.post('/updatePago', pagoController.updatePago); // Actualizar un pago existente
+router.post('/deletePago', pagoController.deletePago); // Eliminar un pago por su ID
+router.post('/getPagosPorFecha', pagoController.getPagosPorFecha); // Obtener pagos por fecha
+router.post('/getTotalPagosPorAtleta', pagoController.getTotalPagosPorAtleta); // Obtener el total de pagos por atleta
 
 
 module.exports = router; 
