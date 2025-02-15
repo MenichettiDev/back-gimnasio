@@ -21,9 +21,20 @@ const listarGimnasioPorIdEntrenador = ( idEntrenador ) => {
     });
 };
 
+const listarGimnasioPorIdAtleta = ( idAtleta ) => {
+    return new Promise((resolve, reject) => {
+        const queryGimnasio = 'SELECT * FROM tb_gimnasio g, tb_atleta a WHERE a.id_atleta = ? and g.id_gimnasio = a.id_gimnasio'; 
+        conexion.query(queryGimnasio, [idAtleta], (error, resultados) => {
+            if (error) return reject(error);
+            resolve(resultados); 
+        });
+    });
+};
+
 
 module.exports = {
 listarGimnasioPorIdEntrenador,
-listarGimnasios
+listarGimnasios,
+listarGimnasioPorIdAtleta
 
 };

@@ -39,6 +39,7 @@ router.post('/deleteEjercicio', ejercicioController.deleteEjercicio );
 router.get('/getRepeticion', repeticionController.obtenerRepeticion );
 //Gimnasios
 router.post('/getGimnasioByIdEntrenador', gimnasioController.obtenerGimnasioPorIdEntrenador );
+router.post('/getGimnasioByIdAtleta', gimnasioController.obtenerGimnasioPorIdAtleta );
 router.get('/getGimnasios', gimnasioController.obtenerGimnasios );
 //Grupos musculares
 router.get('/getGruposMusculares', gruposMuscularesController.obtenerGruposMusculares );
