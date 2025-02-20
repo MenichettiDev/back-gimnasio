@@ -1,8 +1,9 @@
 // Importar el servicio necesario para la consulta
 const { listarRutinaByIdAtleta, listarRutinaByIdCreador,
     listarRutinasFree, crearRutinaYAsignarAtleta,
-    editarRutinaYAsignarAtleta, eliminarRutinaConRelaciones, 
-    listarRutinaByIdRutina} = require('../services/rutinaService');
+    editarRutinaYAsignarAtleta, eliminarRutinaConRelaciones,
+    listarRutinaByIdRutina,
+    listarRutinasByIdAtleta } = require('../services/rutinaService');
 
 exports.obtenerRutinaByIdAtleta = async (req, res) => {
     const { id_atleta } = req.body;
@@ -14,7 +15,7 @@ exports.obtenerRutinaByIdAtleta = async (req, res) => {
 
     try {
 
-        const resultados = await listarRutinaByIdAtleta(id_atleta);
+        const resultados = await listarRutinasByIdAtleta(id_atleta);
 
         if (resultados && resultados.length > 0) {
 
@@ -107,18 +108,18 @@ exports.crearRutinaYAsignarAtleta = async (req, res) => {
     try {
         // Obtener los datos del cuerpo de la solicitud
         const { rutina, ejercicios } = req.body;
-        console.log( rutina, ejercicios );
+        console.log(rutina, ejercicios);
 
         // Validación de los parámetros recibidos
-        if (!rutina || !ejercicios ) {
+        if (!rutina || !ejercicios) {
             return res.status(400).json({ message: 'Faltan parámetros requeridos' });
         }
 
         // Llamar al servicio que crea la rutina y asigna los datos
-        const resultado = await crearRutinaYAsignarAtleta(rutina, ejercicios );
+        const resultado = await crearRutinaYAsignarAtleta(rutina, ejercicios);
 
         // Si la operación es exitosa, devolver el mensaje de éxito
-        return res.status(201).json( resultado );
+        return res.status(201).json(resultado);
     } catch (error) {
         // Si hay un error, mostrar el mensaje de error
         console.error('Error al crear la rutina:', error);
@@ -130,7 +131,7 @@ exports.crearRutinaYAsignarAtleta = async (req, res) => {
 exports.editarRutinaYAsignarAtleta = async (req, res) => {
     try {
         // Obtener los datos del cuerpo de la solicitud
-        const { id_rutina,  rutina, ejercicios, fecha_asignacion } = req.body;
+        const { id_rutina, rutina, ejercicios, fecha_asignacion } = req.body;
 
         // Validación de los parámetros recibidos
         if (!id_rutina || !rutina || !ejercicios || !fecha_asignacion) {
@@ -146,7 +147,7 @@ exports.editarRutinaYAsignarAtleta = async (req, res) => {
         );
 
         // Si la operación es exitosa, devolver el mensaje de éxito
-        return res.status(200).json( resultado );
+        return res.status(200).json(resultado);
     } catch (error) {
         // Si hay un error, mostrar el mensaje de error
         console.error('Error al editar la rutina:', error);
@@ -175,30 +176,44 @@ exports.eliminarRutina = async (req, res) => {
 
 
 // {
-//     "rutina": {
-//       "id_creador": 1,
-//       "nombre": "Rutina de prueba",
-//       "cantidad_dias": 5,
-//       "nivel_atleta": "Intermedio",
-//       "objetivo": "Resistencia",
-//       "descripcion": "Rutina centrada en el aumento de fuerza para atletas intermedios.",
-//       "id_atleta": 1
+//     rutina: {
+//         id_creador: 1,
+//         nombre: "Fuerza y Resistencia",
+//         cantidad_dias: 4,
+//         nivel_atleta: "Intermedio",
+//         objetivo: "Ganar masa muscular",
+//         descripcion: "Rutina enfocada en hipertrofia con ejercicios compuestos y aislados.",
+//         id_atleta: 10,
+//         fecha_asignacion: "2025-02-16"
 //     },
-//     "ejercicios": [
-//       {
-//         "dia": 1,
-//         "ejercicios": [
-//           {"id_grupo_muscular": 2, "id_ejercicio": 1, "id_repeticion": 2 },
-//           {"id_grupo_muscular": 5, "id_ejercicio": 14, "id_repeticion": 4 },
-//         ]
-//       },
-//       {
-//         "dia": 2,
-//         "ejercicios": [
-//           {"id_grupo_muscular": 3, "id_ejercicio": 13, "id_repeticion": 6 },
-//           {"id_grupo_muscular": 13, "id_ejercicio": 122, "id_repeticion": 3 },
-//         ]
-//       }
-//     ],
-//     "fecha_asignacion": "2025-02-13"
-//   }
+//     ejercicios: [
+//         {
+//             dia: 1,
+//             ejercicios: [
+//                 { id_grupo_muscular: 1, id_ejercicio: 101, id_repeticion: 3 },
+//                 { id_grupo_muscular: 2, id_ejercicio: 102, id_repeticion: 4 }
+//             ]
+//         },
+//         {
+//             dia: 2,
+//             ejercicios: [
+//                 { id_grupo_muscular: 3, id_ejercicio: 201, id_repeticion: 3 },
+//                 { id_grupo_muscular: 4, id_ejercicio: 202, id_repeticion: 4 }
+//             ]
+//         },
+//         {
+//             dia: 3,
+//             ejercicios: [
+//                 { id_grupo_muscular: 1, id_ejercicio: 103, id_repeticion: 3 },
+//                 { id_grupo_muscular: 2, id_ejercicio: 104, id_repeticion: 4 }
+//             ]
+//         },
+//         {
+//             dia: 4,
+//             ejercicios: [
+//                 { id_grupo_muscular: 3, id_ejercicio: 203, id_repeticion: 3 },
+//                 { id_grupo_muscular: 4, id_ejercicio: 204, id_repeticion: 4 }
+//             ]
+//         }
+//     ]
+// }
