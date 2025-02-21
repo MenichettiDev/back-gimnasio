@@ -12,6 +12,7 @@ const rutinaController = require('../controllers/rutinaController')
 const fraseController = require('../controllers/fraseController')
 const formaPagoController = require('../controllers/formaPagoController')
 const pagoController = require('../controllers/pagoController')
+const usuarioController = require('../controllers/usuarioController'); //Importamos el controlador por el middleware
 
 
 // Ruta para obtener los menús de una persona por su id_persona
@@ -29,6 +30,14 @@ router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
 router.get('/getAtletas', atletaController.obtenerAtletas );
 router.post('/crearAtleta', atletaController.crearAtleta );
 router.post('/editarAtleta', atletaController.editarAtleta );
+
+
+// Rutas para Persona
+router.get('/personas', usuarioController.obtenerPersonas); // Listar todas las personas
+router.get('/personas/:id_persona', usuarioController.obtenerPersonaPorId); // Obtener una persona por ID
+router.post('/personas', usuarioController.crearPersona); // Crear una nueva persona
+router.put('/personas/:id_persona', usuarioController.editarPersona); // Editar una persona existente
+router.delete('/personas/:id_persona', usuarioController.eliminarPersona); // Eliminar una persona
 
 
 //Ejercicio
