@@ -13,6 +13,7 @@ const fraseController = require('../controllers/fraseController')
 const formaPagoController = require('../controllers/formaPagoController')
 const pagoController = require('../controllers/pagoController')
 const usuarioController = require('../controllers/usuarioController'); //Importamos el controlador por el middleware
+const medidasController = require('../controllers/medidasController'); //Importamos el controlador por el middleware
 
 
 // Ruta para obtener los menús de una persona por su id_persona
@@ -107,5 +108,13 @@ router.post('/deletePago', pagoController.deletePago); // Eliminar un pago por s
 router.post('/getPagosPorFecha', pagoController.getPagosPorFecha); // Obtener pagos por fecha
 router.post('/getTotalPagosPorAtleta', pagoController.getTotalPagosPorAtleta); // Obtener el total de pagos por atleta
 
+
+// Rutas para medidas
+router.get('/medidas', medidasController.obtenerMedidas); // Obtener todas las medidas
+router.get('/medidas/:id', medidasController.obtenerMedidaPorId); // Obtener una medida por ID
+router.get('/medidas/atleta/:id_atleta', medidasController.obtenerMedidasPorAtleta); // Obtener medidas por ID de atleta
+router.post('/medidas', medidasController.crearMedida); // Crear una nueva medida
+router.put('/medidas/:id', medidasController.actualizarMedida); // Actualizar una medida existente
+router.delete('/medidas/:id', medidasController.eliminarMedida); // Eliminar una medida
 
 module.exports = router; 
