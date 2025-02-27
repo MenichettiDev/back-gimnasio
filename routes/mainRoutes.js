@@ -28,6 +28,7 @@ router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
 
 //Atleta
 router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
+router.post('/getAtletaByIdPersona', atletaController.obtenerAtletaByIdPersona );
 router.get('/getAtletas', atletaController.obtenerAtletas );
 router.post('/crearAtleta', atletaController.crearAtleta );
 router.post('/editarAtleta', atletaController.editarAtleta );

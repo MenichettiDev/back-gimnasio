@@ -1,5 +1,7 @@
 // Importar el servicio necesario para la consulta
-const { listarAtletas, listarAtletasPorIdEntrenador, crearAtleta, editarAtleta} = require('../services/atletaService');
+const { listarAtletas, listarAtletasPorIdEntrenador, 
+    crearAtleta, editarAtleta, 
+listarAtletasPorIdPersona} = require('../services/atletaService');
 
 exports.obtenerAtletaByIdEntrenador = async (req, res) => {
     const { id_persona } = req.body;
@@ -28,6 +30,30 @@ exports.obtenerAtletaByIdEntrenador = async (req, res) => {
     }
 };
 
+exports.obtenerAtletaByIdPersona = async (req, res) => {
+    const { id_persona } = req.body;
+
+    if (!id_persona) {
+
+        return res.status(400).json({ message: 'El id_persona es obligatorio' });
+    }
+
+    try {
+
+        const resultados = await listarAtletasPorIdPersona(id_persona);
+
+        if (resultados && resultados.length > 0) {
+
+            return res.json( resultados[0]);
+        } else {
+
+            return res.status(404).json({ message: 'No se encontraron atletas para este entrenador' });
+        }
+    } catch (error) {
+        console.error('Error en la consulta:', error);
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
+    }
+};
 
 exports.obtenerAtletas = async (req, res) => {
 

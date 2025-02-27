@@ -10,6 +10,16 @@ const listarAtletas = () => {
     });
 };
 
+const listarAtletasPorIdPersona = ( id_persona ) => {
+    return new Promise((resolve, reject) => {
+        const queryAtletas = `SELECT * FROM tb_atleta a, tb_persona p WHERE a.id_persona = ? and p.id_persona = a.id_persona`; 
+        conexion.query(queryAtletas, [id_persona], (error, resultados) => {
+            if (error) return reject(error);
+            resolve(resultados); 
+        });
+    });
+};
+
 const listarAtletasPorIdEntrenador = ( idEntrenador ) => {
     return new Promise((resolve, reject) => {
         const queryAtletas = `SELECT * FROM tb_atleta a, tb_persona p WHERE a.id_entrenador = ?`; 
@@ -205,6 +215,7 @@ module.exports = {
     listarAtletas,
     listarAtletasPorIdEntrenador,
     crearAtleta,
-    editarAtleta
+    editarAtleta,
+    listarAtletasPorIdPersona
 
 };
