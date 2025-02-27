@@ -89,18 +89,19 @@ const listarRutinaByIdRutina = (id_rutina) => {
                     ejercicios: ejerciciosPorDia[dia],
                 }));
 
-                // Construir el objeto final de la rutina
                 const rutinaCompleta = {
-                    id_rutina: rutina.id_rutina,
-                    id_creador: rutina.id_creador,
-                    nombre: rutina.nombre,
-                    cantidad_dias: rutina.cantidad_dias,
-                    nivel_atleta: rutina.nivel_atleta,
-                    objetivo: rutina.objetivo,
-                    descripcion: rutina.descripcion,
-                    id_atleta: rutina.id_atleta,
-                    fecha_asignacion: rutina.fecha_asignacion,
-                    dias: dias,
+                    rutina: {
+                        id_rutina: rutina.id_rutina,
+                        id_creador: rutina.id_creador,
+                        nombre: rutina.nombre,
+                        cantidad_dias: rutina.cantidad_dias,
+                        nivel_atleta: rutina.nivel_atleta,
+                        objetivo: rutina.objetivo,
+                        descripcion: rutina.descripcion,
+                        id_atleta: rutina.id_atleta,
+                        fecha_asignacion: rutina.fecha_asignacion,
+                    },
+                    ejercicios: dias, // Los ejercicios ya están agrupados por día
                 };
 
                 resolve(rutinaCompleta); // Devolver la rutina completa
@@ -192,6 +193,7 @@ const listarRutinasByIdAtleta = (id_atleta) => {
                     // Construir el objeto final de la rutina en el formato requerido
                     const rutinaCompleta = {
                         rutina: {
+                            id_rutina: rutina.id_rutina,
                             id_creador: rutina.id_creador,
                             nombre: rutina.nombre,
                             cantidad_dias: rutina.cantidad_dias,

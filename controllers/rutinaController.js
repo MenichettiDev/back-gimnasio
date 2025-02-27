@@ -71,11 +71,10 @@ exports.obtenerRutinaByIdRutina = async (req, res) => {
 
         const resultados = await listarRutinaByIdRutina(id_rutina);
 
-        if (resultados && resultados.length > 0) {
+        if (resultados ) {
 
-            return res.json({
-                rutinas: resultados
-            });
+            return res.json( resultados
+            );
         } else {
 
             return res.status(404).json({ message: 'No se encontraron rutinas para ese id' });
