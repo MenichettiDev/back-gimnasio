@@ -8,6 +8,8 @@ const authRoutes = require('./routes/authRoutes'); //Importamos las rutas de aut
 const bodyParser = require('body-parser'); //Middleware para analizar el cuerpo de las solicitudes HTTP.
 const cors = require('cors');
 
+const allowedOrigins = ['http://localhost:4200', 'http://gymrats.com.ar'];
+
 //Sesiones
 const session = require('express-session'); //Middleware para gestionar sesiones de usuario.
 
@@ -22,8 +24,14 @@ app.use(session({
 }));
 
 app.use(cors({
-    origin: 'http://localhost:4200', // Permitir solo solicitudes desde tu frontend
-    credentials: true // Permitir el envío de cookies o encabezados con credenciales
+  origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true); // Permite el origen
+      } else {
+          callback(new Error('Not allowed by CORS')); // Bloquea el origen
+      }
+  },
+  credentials: true // Permitir el envío de cookies o encabezados con credenciales
 }));
 
 //Todas las rutas definidas en mainRoutes estarán bajo "/"
