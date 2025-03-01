@@ -25,21 +25,62 @@ const obtenerPagoPorId = (id_pago) => {
 // 3. Crear un nuevo pago
 const crearPago = (nuevoPago) => {
     return new Promise((resolve, reject) => {
-        const query = `
-            INSERT INTO tb_pago (
-                id_atleta, 
-                id_membresia, 
-                fecha_pago, 
-                monto, 
-                id_forma_pago
-            ) VALUES (?, ?, ?, ?, ?);
-        `;
+        // Iniciar una transacción
+        conexion.beginTransaction((error) => {
+            if (error) {
+                console.error("Error al iniciar la transacción:", error);
+                return reject(error);
+            }
 
-        const { id_atleta, id_membresia, fecha_pago, monto, id_forma_pago } = nuevoPago;
+            // Query para insertar el pago
+            const queryInsertPago = `
+                INSERT INTO tb_pago (
+                    id_atleta, 
+                    id_membresia, 
+                    fecha_pago, 
+                    monto, 
+                    id_forma_pago
+                ) VALUES (?, ?, ?, ?, ?);
+            `;
 
-        conexion.query(query, [id_atleta, id_membresia, fecha_pago, monto, id_forma_pago], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados.insertId); // Devuelve el ID del nuevo pago creado
+            const { id_atleta, id_membresia, fecha_pago, monto, id_forma_pago } = nuevoPago;
+
+            // Insertar el pago
+            conexion.query(queryInsertPago, [id_atleta, id_membresia, fecha_pago, monto, id_forma_pago], (error, resultados) => {
+                if (error) {
+                    console.error("Error al insertar el pago:", error);
+                    return conexion.rollback(() => reject(error));
+                }
+
+                // Obtener el ID del nuevo pago insertado
+                const nuevoPagoId = resultados.insertId;
+
+                // Query para actualizar la fecha de último pago en tb_atleta
+                const queryUpdateAtleta = `
+                    UPDATE tb_atleta 
+                    SET ultimo_pago = ? , estado = "activo"
+                    WHERE id_atleta = ?;
+                `;
+
+                // Actualizar la fecha de último pago
+                conexion.query(queryUpdateAtleta, [fecha_pago, id_atleta], (error, resultados) => {
+                    if (error) {
+                        console.error("Error al actualizar el atleta:", error);
+                        return conexion.rollback(() => reject(error));
+                    }
+
+                    // Si todo está bien, hacer commit
+                    conexion.commit((error) => {
+                        if (error) {
+                            console.error("Error al hacer commit:", error);
+                            return conexion.rollback(() => reject(error));
+                        }
+
+                        // Resolver la promesa con el ID del nuevo pago
+                        resolve(nuevoPagoId);
+                    });
+                });
+            });
         });
     });
 };

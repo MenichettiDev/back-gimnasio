@@ -59,15 +59,15 @@ exports.getPagoPorId = async (req, res) => {
 // 3. Crear un nuevo pago
 exports.createPago = async (req, res) => {
     const { id_atleta, id_membresia, fecha_pago, monto, id_forma_pago } = req.body;
-
     if (!id_atleta || !id_membresia || !fecha_pago || !monto || !id_forma_pago) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios' });
     }
 
+    console.log('lalalala')
     try {
         const nuevoPago = { id_atleta, id_membresia, fecha_pago, monto, id_forma_pago };
         const idPagoCreado = await crearPago(nuevoPago);
-
+        console.log('pago creaofd', idPagoCreado)
         if (idPagoCreado) {
             return res.status(201).json({ message: 'Pago creado exitosamente', id: idPagoCreado });
         } else {
