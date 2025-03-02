@@ -14,6 +14,8 @@ const formaPagoController = require('../controllers/formaPagoController')
 const pagoController = require('../controllers/pagoController')
 const usuarioController = require('../controllers/usuarioController'); //Importamos el controlador por el middleware
 const medidasController = require('../controllers/medidasController'); //Importamos el controlador por el middleware
+const logrosController = require('../controllers/logrosController');
+const metasController = require('../controllers/metasController');
 
 
 // Ruta para obtener los menús de una persona por su id_persona
@@ -117,5 +119,24 @@ router.get('/medidas/atleta/:id_atleta', medidasController.obtenerMedidasPorAtle
 router.post('/medidas', medidasController.crearMedida); // Crear una nueva medida
 router.put('/medidas/:id', medidasController.actualizarMedida); // Actualizar una medida existente
 router.delete('/medidas/:id', medidasController.eliminarMedida); // Eliminar una medida
+
+
+//Logros
+// 1. Obtener todos los logros
+router.get('/logros', logrosController.obtenerLogros);
+router.get('/logros/:id', logrosController.obtenerLogroPorId);
+router.post('/logros', logrosController.crearLogro);
+router.put('/logros/:id', logrosController.actualizarLogro);
+router.delete('/logros/:id', logrosController.eliminarLogro);
+router.get('/logros/atleta/:id_atleta', logrosController.listarLogrosPorIdAtleta);
+
+
+//Metas
+router.get('/metas', metasController.obtenerMetas);
+router.get('/metas/:id', metasController.obtenerMetaPorId);
+router.post('/metas', metasController.crearMeta);
+router.put('/metas/:id', metasController.actualizarMeta);
+router.delete('/metas/:id', metasController.eliminarMeta);
+router.get('/metas/atleta/:id_atleta', metasController.listarMetasPorIdAtleta);
 
 module.exports = router; 
