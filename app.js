@@ -8,7 +8,6 @@ const authRoutes = require('./routes/authRoutes'); //Importamos las rutas de aut
 const bodyParser = require('body-parser'); //Middleware para analizar el cuerpo de las solicitudes HTTP.
 const cors = require('cors');
 
-const allowedOrigins = ['http://localhost:4200', 'http://gymrats.com.ar'];
 
 //Sesiones
 const session = require('express-session'); //Middleware para gestionar sesiones de usuario.
@@ -23,15 +22,26 @@ app.use(session({
   cookie: { secure: false } //Cambia a true si usas HTTPS.
 }));
 
+const allowedOrigins = [
+  'http://localhost:4200',
+  'http://gymrats.com.ar',
+  'https://gymrats.com.ar' // Asegúrate de incluir HTTPS si es necesario
+];
+
+// app.use(cors({
+//   origin: function (origin, callback) {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//           callback(null, true); // Permite el origen
+//       } else {
+//           callback(new Error('Not allowed by CORS')); // Bloquea el origen
+//       }
+//   },
+//   credentials: true // Permitir el envío de cookies o encabezados con credenciales
+// }));
+
 app.use(cors({
-  origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true); // Permite el origen
-      } else {
-          callback(new Error('Not allowed by CORS')); // Bloquea el origen
-      }
-  },
-  credentials: true // Permitir el envío de cookies o encabezados con credenciales
+  origin: '*',
+  credentials: true
 }));
 
 //Todas las rutas definidas en mainRoutes estarán bajo "/"
@@ -41,6 +51,6 @@ app.use('/', authRoutes); //Rutas de autenticación.
 //Configuración del puerto
 const PORT = process.env.PORT || 7000; //Usa el puerto del entorno o el 7000 por defecto.
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
