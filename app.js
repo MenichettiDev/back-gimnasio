@@ -40,10 +40,8 @@ app.use(cors({
   credentials: true // Permitir el envío de cookies o encabezados con credenciales
 }));
 
-// app.use(cors({
-//   origin: '*',
-//   credentials: true
-// }));
+// Middleware para manejar solicitudes OPTIONS
+app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
 
 //Todas las rutas definidas en mainRoutes estarán bajo "/"
 app.use('/', mainRoutes);
