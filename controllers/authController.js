@@ -23,7 +23,7 @@ exports.postLogin = async (req, res) => {
         //Llamamos a la función del servicio para autenticar al médico
         const resultados = await autenticarUsuario(usuario, contrasenia);
 
-        if (resultados.length > 0) {
+        if ( resultados ) {
             //Si se encuentra el usuario, obtener el médico logueado
             const usuarioObtenido = await obtenerUsuarioLogueado( usuario );
 
