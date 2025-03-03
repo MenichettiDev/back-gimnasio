@@ -36,6 +36,7 @@ exports.postLogin = async (req, res) => {
 
                 //Respondes con el usuario autenticado y mensaje de éxito
                 // return res.json( req.session.usuario );
+                console.log( usuarioObtenido );
                 return res.json( usuarioObtenido );
             } else {
                 //Si el médico no se encuentra indicamos el error
