@@ -29,13 +29,14 @@ exports.postLogin = async (req, res) => {
 
             if (usuarioObtenido ) {
                 //Acá almacenamos el nombre y la matrícula del médico en la sesión
-                req.session.nombre = `${usuarioObtenido[0].nombre} ${usuarioObtenido[0].apellido}`;
-                req.session.matricula = usuarioObtenido;
-                req.session.isLoggedIn = true; //Este true marca al usuario como autenticado
-                req.session.usuario = usuarioObtenido; //Acá se suarda el nombre de usuario
+                // req.session.nombre = `${usuarioObtenido[0].nombre} ${usuarioObtenido[0].apellido}`;
+                // req.session.matricula = usuarioObtenido;
+                // req.session.isLoggedIn = true; //Este true marca al usuario como autenticado
+                // req.session.usuario = usuarioObtenido; //Acá se suarda el nombre de usuario
 
                 //Respondes con el usuario autenticado y mensaje de éxito
-                return res.json( req.session.usuario );
+                // return res.json( req.session.usuario );
+                return res.json( usuarioObtenido );
             } else {
                 //Si el médico no se encuentra indicamos el error
                 return res.status(404).json({ message: 'User no encontrado' });
