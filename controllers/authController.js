@@ -27,7 +27,7 @@ exports.postLogin = async (req, res) => {
             //Si se encuentra el usuario, obtener el médico logueado
             const usuarioObtenido = await obtenerUsuarioLogueado( usuario );
 
-            if (usuarioObtenido && usuarioObtenido.length > 0) {
+            if (usuarioObtenido ) {
                 //Acá almacenamos el nombre y la matrícula del médico en la sesión
                 req.session.nombre = `${usuarioObtenido[0].nombre} ${usuarioObtenido[0].apellido}`;
                 req.session.matricula = usuarioObtenido;
