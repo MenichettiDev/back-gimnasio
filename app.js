@@ -24,25 +24,26 @@ app.use(session({
 
 const allowedOrigins = [
   'http://localhost:4200',
+  'https://localhost:4200',
   'http://gymrats.com.ar',
   'https://gymrats.com.ar' // Asegúrate de incluir HTTPS si es necesario
 ];
 
-// app.use(cors({
-//   origin: function (origin, callback) {
-//       if (!origin || allowedOrigins.includes(origin)) {
-//           callback(null, true); // Permite el origen
-//       } else {
-//           callback(new Error('Not allowed by CORS')); // Bloquea el origen
-//       }
-//   },
-//   credentials: true // Permitir el envío de cookies o encabezados con credenciales
-// }));
-
 app.use(cors({
-  origin: '*',
-  credentials: true
+  origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true); // Permite el origen
+      } else {
+          callback(new Error('Not allowed by CORS')); // Bloquea el origen
+      }
+  },
+  credentials: true // Permitir el envío de cookies o encabezados con credenciales
 }));
+
+// app.use(cors({
+//   origin: '*',
+//   credentials: true
+// }));
 
 //Todas las rutas definidas en mainRoutes estarán bajo "/"
 app.use('/', mainRoutes);
