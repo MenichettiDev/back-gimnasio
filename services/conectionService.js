@@ -23,14 +23,18 @@ const autenticarUsuario = ( email, contrasenia ) => {
     });
 };
 
-const obtenerUsuarioLogueado = ( email ) => {
+const obtenerUsuarioLogueado = (email) => {
     return new Promise((resolve, reject) => {
-        const queryUsuario = `SELECT p.*, a.*, e.* 
-        FROM tb_persona p, tb_atleta a, tb_entrenador e 
-        WHERE p.email = ? and p.id_persona = a.id_persona and p.id_persona = e.id_persona`;
+        const queryUsuario = `
+            SELECT p.*, a.*, e.* 
+            FROM tb_persona p
+            LEFT JOIN tb_atleta a ON p.id_persona = a.id_persona
+            LEFT JOIN tb_entrenador e ON p.id_persona = e.id_persona
+            WHERE p.email = ?
+        `;
         conexion.query(queryUsuario, [email], (error, resultados) => {
             if (error) return reject(error);
-            resolve(resultados); //Devuelve los datos del médico logueado
+            resolve(resultados); // Devuelve los datos del usuario logueado
         });
     });
 };
