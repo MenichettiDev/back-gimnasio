@@ -53,7 +53,7 @@ router.post('/deleteEjercicio', ejercicioController.deleteEjercicio );
 
 
 //Tipo de repeticion de ejercicio
-router.get('/getRepeticion', repeticionController.obtenerRepeticiones );
+router.get('/api/getRepeticion', repeticionController.obtenerRepeticiones );
 // router.get('/repeticiones', repeticionController.obtenerRepeticiones);
 router.get('/repeticiones/:id', repeticionController.obtenerRepeticionPorId);
 router.post('/repeticiones', repeticionController.crearRepeticion);
