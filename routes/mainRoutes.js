@@ -89,6 +89,8 @@ router.post('/getRutinaByIdRutina', rutinaController.obtenerRutinaByIdRutina );
 router.post('/crearRutinaYAsignarAtleta', rutinaController.crearRutinaYAsignarAtleta );
 router.post('/editarRutina', rutinaController.editarRutinaYAsignarAtleta );
 router.post('/eliminarRutina', rutinaController.eliminarRutina );
+router.post('/getRutinasFiltradas', rutinaController.filtrarRutinas );
+
 
 
 //Frase

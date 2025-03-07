@@ -3,7 +3,9 @@ const { listarRutinaByIdAtleta, listarRutinaByIdCreador,
     listarRutinasFree, crearRutinaYAsignarAtleta,
     editarRutinaYAsignarAtleta, eliminarRutinaConRelaciones,
     listarRutinaByIdRutina,
-    listarRutinasByIdAtleta } = require('../services/rutinaService');
+    listarRutinasByIdAtleta,
+buscarRutinasByFiltro
+} = require('../services/rutinaService');
 
 exports.obtenerRutinaByIdAtleta = async (req, res) => {
     const { id_atleta } = req.body;
@@ -27,6 +29,57 @@ exports.obtenerRutinaByIdAtleta = async (req, res) => {
             return res.status(404).json({ message: 'No se encontraron rutinas para este atleta' });
         }
     } catch (error) {
+        console.error('Error en la consulta:', error);
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
+    }
+};
+
+exports.filtrarRutinas = async (req, res) => {
+    // Extraer los filtros del cuerpo de la solicitud
+    const { 
+        nombre = '', 
+        fechaDesde = null, 
+        fechaHasta = null, 
+        objetivo = '', 
+        nivelAtleta = '', 
+        cantidadDias = '', 
+        idCreador = null 
+    } = req.body;
+
+    // Validar que al menos un filtro esté presente
+    if (
+        !nombre &&
+        !fechaDesde &&
+        !fechaHasta &&
+        !objetivo &&
+        !nivelAtleta &&
+        !cantidadDias &&
+        !idCreador
+    ) {
+        return res.status(400).json({ message: 'Debe proporcionar al menos un criterio de búsqueda' });
+    }
+
+    try {
+        // Llamar al servicio para buscar las rutinas con los filtros proporcionados
+        const resultados = await buscarRutinasByFiltro({
+            nombre,
+            fechaDesde,
+            fechaHasta,
+            objetivo,
+            nivelAtleta,
+            cantidadDias,
+            idCreador,
+        });
+
+        // Si no se encuentran resultados, devolver un mensaje adecuado
+        if (resultados.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron rutinas con los criterios proporcionados' });
+        }
+
+        // Devolver las rutinas encontradas
+        return res.json(resultados);
+    } catch (error) {
+        // Manejar errores y devolver una respuesta de error
         console.error('Error en la consulta:', error);
         return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }

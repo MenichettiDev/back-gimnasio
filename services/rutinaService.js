@@ -1,23 +1,9 @@
 const conexion = require('../config/conexion');
 
 const listarRutinasFree = () => {
-    return new Promise((resolve, reject) => {
-        const queryRutina = `SELECT * FROM tb_rutina where id_rutina < 13`;
-        conexion.query(queryRutina, (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados);
-        });
-    });
 };
 
 const listarRutinaByIdCreador = (id_persona) => {
-    return new Promise((resolve, reject) => {
-        const queryRutina = `SELECT * FROM tb_rutina where id_creador = ?`;
-        conexion.query(queryRutina, [id_persona], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados);
-        });
-    });
 };
 
 const listarRutinaByIdRutina = (id_rutina) => {
@@ -220,7 +206,159 @@ const listarRutinasByIdAtleta = (id_atleta) => {
     });
 };
 
+const buscarRutinasByFiltro = ( filtros ) => {
+    return new Promise((resolve, reject) => {
+        // Desestructurar los filtros recibidos
+        const {
+            nombre = '',
+            fechaDesde = null,
+            fechaHasta = null,
+            objetivo = '',
+            nivelAtleta = '',
+            cantidadDias = '',
+            idCreador = null,
+        } = filtros;
 
+        // Construir la consulta SQL dinámica
+        let queryRutinas = `
+            SELECT 
+                r.id_rutina,
+                r.id_creador,
+                r.nombre,
+                r.cantidad_dias,
+                r.nivel_atleta,
+                r.objetivo,
+                r.descripcion
+            FROM tb_rutina r
+            WHERE 1=1
+        `;
+
+        // Array para almacenar los valores de los parámetros de la consulta
+        const params = [];
+
+        // Agregar condiciones según los filtros
+        if (nombre) {
+            queryRutinas += ` AND r.nombre LIKE ?`;
+            params.push(`%${nombre}%`);
+        }
+
+        if (fechaDesde && fechaHasta) {
+            queryRutinas += ` AND r.fecha_creacion BETWEEN ? AND ?`;
+            params.push(fechaDesde, fechaHasta);
+        } else if (fechaDesde) {
+            queryRutinas += ` AND r.fecha_creacion >= ?`;
+            params.push(fechaDesde);
+        } else if (fechaHasta) {
+            queryRutinas += ` AND r.fecha_creacion <= ?`;
+            params.push(fechaHasta);
+        }
+
+        if (objetivo) {
+            queryRutinas += ` AND r.objetivo = ?`;
+            params.push(objetivo);
+        }
+
+        if (nivelAtleta) {
+            queryRutinas += ` AND r.nivel_atleta = ?`;
+            params.push(nivelAtleta);
+        }
+
+        if (cantidadDias) {
+            queryRutinas += ` AND r.cantidad_dias = ?`;
+            params.push(cantidadDias);
+        }
+
+        if (idCreador) {
+            queryRutinas += ` AND r.id_creador = ?`;
+            params.push(idCreador);
+        }
+
+        // Consulta para obtener los ejercicios de una rutina por día
+        const queryEjercicios = `
+            SELECT 
+                dia,
+                id_grupo_muscular,
+                id_ejercicios AS id_ejercicio,
+                id_repeticion
+            FROM tb_rutina_ejercicios
+            WHERE id_rutina = ?
+            ORDER BY dia ASC;
+        `;
+
+        // Ejecutar la primera consulta para obtener las rutinas filtradas
+        conexion.query(queryRutinas, params, (error, resultadosRutinas) => {
+            if (error) {
+                return reject('Error al consultar las rutinas');
+            }
+
+            // Si no se encuentran rutinas, rechazar la promesa
+            if (resultadosRutinas.length === 0) {
+                return resolve([]); // Devolver un array vacío si no hay resultados
+            }
+
+            // Array para almacenar las rutinas completas
+            const rutinasCompletas = [];
+
+            // Función para procesar cada rutina
+            const procesarRutina = (index) => {
+                if (index >= resultadosRutinas.length) {
+                    return resolve(rutinasCompletas); // Devolver todas las rutinas procesadas
+                }
+
+                const rutina = resultadosRutinas[index]; // Datos generales de la rutina
+
+                // Ejecutar la segunda consulta para obtener los ejercicios de la rutina
+                conexion.query(queryEjercicios, [rutina.id_rutina], (error, resultadosEjercicios) => {
+                    if (error) {
+                        return reject('Error al consultar los ejercicios de la rutina');
+                    }
+
+                    // Agrupar los ejercicios por día
+                    const ejerciciosPorDia = resultadosEjercicios.reduce((acc, ejercicio) => {
+                        if (!acc[ejercicio.dia]) {
+                            acc[ejercicio.dia] = [];
+                        }
+                        acc[ejercicio.dia].push({
+                            id_grupo_muscular: ejercicio.id_grupo_muscular,
+                            id_ejercicio: ejercicio.id_ejercicio,
+                            id_repeticion: ejercicio.id_repeticion,
+                        });
+                        return acc;
+                    }, {});
+
+                    // Formatear los ejercicios en una estructura de días
+                    const dias = Object.keys(ejerciciosPorDia).map(dia => ({
+                        dia: parseInt(dia),
+                        ejercicios: ejerciciosPorDia[dia],
+                    }));
+
+                    // Construir el objeto final de la rutina en el formato requerido
+                    const rutinaCompleta = {
+                        rutina: {
+                            id_rutina: rutina.id_rutina,
+                            id_creador: rutina.id_creador,
+                            nombre: rutina.nombre,
+                            cantidad_dias: rutina.cantidad_dias,
+                            nivel_atleta: rutina.nivel_atleta,
+                            objetivo: rutina.objetivo,
+                            descripcion: rutina.descripcion,
+                        },
+                        ejercicios: dias, // Los ejercicios ya están agrupados por día
+                    };
+
+                    // Agregar la rutina completa al array
+                    rutinasCompletas.push(rutinaCompleta);
+
+                    // Procesar la siguiente rutina
+                    procesarRutina(index + 1);
+                });
+            };
+
+            // Iniciar el procesamiento de las rutinas
+            procesarRutina(0);
+        });
+    });
+};
 
 const crearRutinaYAsignarAtleta = (rutina, ejercicios ) => {
     return new Promise((resolve, reject) => {
@@ -516,6 +654,7 @@ module.exports = {
     crearRutinaYAsignarAtleta,
     editarRutinaYAsignarAtleta,
     eliminarRutinaConRelaciones,
-    listarRutinaByIdRutina
+    listarRutinaByIdRutina,
+    buscarRutinasByFiltro
 
 };
