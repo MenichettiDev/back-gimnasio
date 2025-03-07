@@ -22,10 +22,18 @@ app.use(session({
   cookie: { secure: true } //Cambia a true si usas HTTPS.
 }));
 
+// Middleware para asegurar que CORS esté bien configurado
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://gymrats.com.ar');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  next();
+});
+
 const allowedOrigins = [
   'http://localhost:4200',
   'https://localhost:4200',
-  'http://gymrats.com.ar',
   'https://gymrats.com.ar' // Asegúrate de incluir HTTPS si es necesario
 ];
 
