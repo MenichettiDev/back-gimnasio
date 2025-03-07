@@ -47,6 +47,11 @@ app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIO
 app.use('/api', mainRoutes);
 app.use('/api', authRoutes); // Rutas de autenticación bajo "/api"
 
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ message: 'Algo salió mal', error: err.message });
+});
+
 
 //Configuración del puerto
 const PORT = process.env.PORT || 7000; //Usa el puerto del entorno o el 7000 por defecto.
