@@ -43,9 +43,10 @@ app.use(cors({
 // Middleware para manejar solicitudes OPTIONS
 app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
 
-//Todas las rutas definidas en mainRoutes estarán bajo "/"
-app.use('/', mainRoutes);
-app.use('/', authRoutes); //Rutas de autenticación.
+// Todas las rutas definidas en mainRoutes estarán bajo "/api"
+app.use('/api', mainRoutes);
+app.use('/api', authRoutes); // Rutas de autenticación bajo "/api"
+
 
 //Configuración del puerto
 const PORT = process.env.PORT || 7000; //Usa el puerto del entorno o el 7000 por defecto.
