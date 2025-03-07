@@ -19,7 +19,7 @@ app.use(session({
   secret: 'claveSecreta', //Cambia por una clave secreta más segura.
   resave: false, //No volver a guardar la sesión si no ha sido modificada.
   saveUninitialized: true, //Guardar sesiones nuevas aunque no tengan datos.
-  cookie: { secure: false } //Cambia a true si usas HTTPS.
+  cookie: { secure: true } //Cambia a true si usas HTTPS.
 }));
 
 const allowedOrigins = [
