@@ -35,23 +35,14 @@ const session = require('express-session'); //Middleware para gestionar sesiones
 
 app.use(express.json()); //Si necesitas manejar JSON en tu aplicación.
 
-//Configuración de express-session
-// app.use(session({
-//   secret: 'claveSecreta', //Cambia por una clave secreta más segura.
-//   resave: false, //No volver a guardar la sesión si no ha sido modificada.
-//   saveUninitialized: true, //Guardar sesiones nuevas aunque no tengan datos.
-//   cookie: { secure: true } //Cambia a true si usas HTTPS.
-// }));
+// Configuración de express-session
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'claveSecretaTemporal',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { 
-    secure: true, // ¡Requiere HTTPS!
-    sameSite: 'none', // Necesario para cross-site cookies
-    maxAge: 24 * 60 * 60 * 1000 // 1 día
-  }
+  secret: 'claveSecreta', //Cambia por una clave secreta más segura.
+  resave: false, //No volver a guardar la sesión si no ha sido modificada.
+  saveUninitialized: true, //Guardar sesiones nuevas aunque no tengan datos.
+  cookie: { secure: true } //Cambia a true si usas HTTPS.
 }));
+
 
 
 const allowedOrigins = [
