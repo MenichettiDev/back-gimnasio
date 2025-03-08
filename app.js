@@ -8,6 +8,27 @@ const authRoutes = require('./routes/authRoutes'); //Importamos las rutas de aut
 const bodyParser = require('body-parser'); //Middleware para analizar el cuerpo de las solicitudes HTTP.
 const cors = require('cors');
 
+//errores
+const fs = require('fs');
+const morgan = require('morgan'); // Instala con: npm install morgan
+
+// Crear archivo de logs
+const logStream = fs.createWriteStream(
+  path.join(__dirname, 'logs', 'api.log'), 
+  { flags: 'a' }
+);
+
+// Registrar todas las peticiones
+app.use(morgan('combined', { stream: logStream }));
+
+// Middleware para errores
+app.use((err, req, res, next) => {
+  console.error('❌ ERROR:', err.stack); // Muestra errores en consola
+  logStream.write(`❌ [${new Date().toISOString()}] ${err.stack}\n`); // Guarda en archivo
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+//////////////////////////////////////////////////////////
+
 
 //Sesiones
 const session = require('express-session'); //Middleware para gestionar sesiones de usuario.
@@ -15,31 +36,44 @@ const session = require('express-session'); //Middleware para gestionar sesiones
 app.use(express.json()); //Si necesitas manejar JSON en tu aplicación.
 
 //Configuración de express-session
+// app.use(session({
+//   secret: 'claveSecreta', //Cambia por una clave secreta más segura.
+//   resave: false, //No volver a guardar la sesión si no ha sido modificada.
+//   saveUninitialized: true, //Guardar sesiones nuevas aunque no tengan datos.
+//   cookie: { secure: true } //Cambia a true si usas HTTPS.
+// }));
 app.use(session({
-  secret: 'claveSecreta', //Cambia por una clave secreta más segura.
-  resave: false, //No volver a guardar la sesión si no ha sido modificada.
-  saveUninitialized: true, //Guardar sesiones nuevas aunque no tengan datos.
-  cookie: { secure: true } //Cambia a true si usas HTTPS.
+  secret: process.env.SESSION_SECRET || 'claveSecretaTemporal',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { 
+    secure: true, // ¡Requiere HTTPS!
+    sameSite: 'none', // Necesario para cross-site cookies
+    maxAge: 24 * 60 * 60 * 1000 // 1 día
+  }
 }));
-
 
 
 const allowedOrigins = [
   'http://localhost:4200',
   'https://localhost:4200',
-  'https://gymrats.com.ar' // Asegúrate de incluir HTTPS si es necesario
+  'https://gymrats.com.ar', // Dominio frontend
+  'https://www.gymrats.com.ar' // Variante con www
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true); // Permite el origen
-      } else {
-          callback(new Error('Not allowed by CORS')); // Bloquea el origen
-      }
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS bloqueado: ${origin}`));
+    }
   },
-  credentials: true // Permitir el envío de cookies o encabezados con credenciales
+  credentials: true // ¡Importante para cookies/sesiones!
 }));
+
+// ¡Antes de las rutas!
+app.set('trust proxy', true); // Confía en el proxy (OpenLiteSpeed)
 
 // Middleware para manejar solicitudes OPTIONS
 app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
