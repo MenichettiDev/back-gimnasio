@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes'); //Importamos las rutas de aut
 const bodyParser = require('body-parser'); //Middleware para analizar el cuerpo de las solicitudes HTTP.
 const cors = require('cors');
 
+app.set('trust proxy', true); // ¡Confía en el proxy (OpenLiteSpeed)!
 
 //Sesiones
 const session = require('express-session'); //Middleware para gestionar sesiones de usuario.
@@ -15,19 +16,31 @@ const session = require('express-session'); //Middleware para gestionar sesiones
 app.use(express.json()); //Si necesitas manejar JSON en tu aplicación.
 
 //Configuración de express-session
+// app.use(session({
+//   secret: 'claveSecreta', //Cambia por una clave secreta más segura.
+//   resave: false, //No volver a guardar la sesión si no ha sido modificada.
+//   saveUninitialized: true, //Guardar sesiones nuevas aunque no tengan datos.
+//   cookie: { secure: true } //Cambia a true si usas HTTPS.
+// }));
+
 app.use(session({
-  secret: 'claveSecreta', //Cambia por una clave secreta más segura.
-  resave: false, //No volver a guardar la sesión si no ha sido modificada.
-  saveUninitialized: true, //Guardar sesiones nuevas aunque no tengan datos.
-  cookie: { secure: true } //Cambia a true si usas HTTPS.
+  secret: 'claveSecreta', // Usa una clave segura (mejor en .env)
+  resave: false,
+  saveUninitialized: true,
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production', // false en desarrollo
+    sameSite: 'none', // Necesario para cross-site cookies
+    httpOnly: true
+  }
 }));
 
-
+// app.js
 
 const allowedOrigins = [
   'http://localhost:4200',
   'https://localhost:4200',
-  'https://gymrats.com.ar' // Asegúrate de incluir HTTPS si es necesario
+  'https://gymrats.com.ar', // Asegúrate de incluir HTTPS si es necesario
+  'https://www.gymrats.com.ar' // Asegúrate de incluir HTTPS si es necesario
 ];
 
 app.use(cors({
