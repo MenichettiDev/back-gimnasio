@@ -44,14 +44,14 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true); // Permite el origen
-      } else {
-          callback(new Error('Not allowed by CORS')); // Bloquea el origen
-      }
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origen no permitido: ${origin}`));
+    }
   },
-  credentials: true // Permitir el envío de cookies o encabezados con credenciales
+  credentials: true // ¡Clave para cookies/sesiones!
 }));
 
 // Middleware para manejar solicitudes OPTIONS
