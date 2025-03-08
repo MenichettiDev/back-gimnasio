@@ -9,7 +9,7 @@ router.get('/api/login', authController.getLogin);
 router.get('/api/', authController.redirectLogin);
 
 //Ruta para manejar el envío del formulario de inicio de sesión
-router.post('/api/login', authController.postLogin); 
+router.post('/login', authController.postLogin); 
 
 //Ruta para cerrar sesión del usuario
 router.post('/api/logout', authController.logout); //Llamamos al método logout para cerrar la sesión
