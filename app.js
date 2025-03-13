@@ -57,9 +57,8 @@ app.use(cors({
 // Middleware para manejar solicitudes OPTIONS
 app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
 
-// Todas las rutas definidas en mainRoutes estarán bajo "/api"
-app.use('/api', mainRoutes);
-app.use('/api', authRoutes); // Rutas de autenticación bajo "/api"
+app.use('/', mainRoutes);
+app.use('/', authRoutes); 
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);
