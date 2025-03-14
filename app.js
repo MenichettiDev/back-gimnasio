@@ -53,13 +53,20 @@ app.use(cors({
   },
   credentials: true // ¡Clave para cookies/sesiones!
 }));
-
+//errrores de cors
+app.use((err, req, res, next) => {
+  if (err.message.startsWith('Origen no permitido')) {
+    console.warn(`CORS error: ${err.message}`);
+    return res.status(403).json({ error: 'Acceso no permitido por CORS' });
+  }
+  next(err);
+});
 // Middleware para manejar solicitudes OPTIONS
 app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
 
 // Todas las rutas definidas en mainRoutes estarán bajo "/api"
-app.use('/api', mainRoutes);
-app.use('/api', authRoutes); // Rutas de autenticación bajo "/api"
+app.use('/', mainRoutes);
+app.use('/', authRoutes); // Rutas de autenticación bajo "/api"
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);
