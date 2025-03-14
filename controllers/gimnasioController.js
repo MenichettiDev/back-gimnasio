@@ -16,7 +16,7 @@ exports.obtenerGimnasios = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos' , error});
     }
 };
 
