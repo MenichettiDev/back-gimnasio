@@ -61,6 +61,12 @@ app.use((err, req, res, next) => {
   }
   next(err);
 });
+///////
+// Middleware para registrar todas las solicitudes entrantes
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next(); // Continúa con el siguiente middleware o ruta
+});
 // Middleware para manejar solicitudes OPTIONS
 app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
 
