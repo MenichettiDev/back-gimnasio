@@ -64,7 +64,7 @@ router.delete('/api/repeticiones/:id', repeticionController.eliminarRepeticion);
 //Gimnasios
 router.post('/api/getGimnasioByIdEntrenador', gimnasioController.obtenerGimnasioPorIdEntrenador );
 router.post('/api/getGimnasioByIdAtleta', gimnasioController.obtenerGimnasioPorIdAtleta );
-router.get('/api/getGimnasios', gimnasioController.obtenerGimnasios );
+router.get('/getGimnasios', gimnasioController.obtenerGimnasios );
 
 
 //Grupos musculares

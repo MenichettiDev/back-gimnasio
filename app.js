@@ -70,8 +70,8 @@ app.use((req, res, next) => {
 // Middleware para manejar solicitudes OPTIONS
 app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
 
-app.use('/', mainRoutes);
-app.use('/', authRoutes); 
+app.use('/api', mainRoutes);
+app.use('/api', authRoutes); 
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);
