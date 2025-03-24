@@ -1,30 +1,57 @@
 const conexion = require('../config/conexion');
-
-
-const listarEjercicioPorGrupoMuscular = ( grupoMuscular ) => {
+//pool aplicado
+// 1. Listar ejercicios por grupo muscular
+const listarEjercicioPorGrupoMuscular = (grupoMuscular) => {
     return new Promise((resolve, reject) => {
-        const queryEjercicios = 'SELECT * FROM tb_ejercicios e WHERE e.id_grupo_muscular = ?'; // Filtramos por id_entrenador
-        conexion.query(queryEjercicios, [grupoMuscular], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados); // Devuelve los atletas que están relacionados con el id_entrenador
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const queryEjercicios = 'SELECT * FROM tb_ejercicios e WHERE e.id_grupo_muscular = ?';
+            connection.query(queryEjercicios, [grupoMuscular], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Devuelve los ejercicios filtrados por grupo muscular
+            });
         });
     });
 };
 
-const listarEjercicioById = ( id_ejercicio ) => {
+// 2. Listar ejercicio por ID
+const listarEjercicioById = (id_ejercicio) => {
     return new Promise((resolve, reject) => {
-        const queryEjercicios = 'SELECT * FROM tb_ejercicios e WHERE e.id_ejercicio = ?'; 
-        conexion.query(queryEjercicios, [id_ejercicio], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados); // Devuelve los atletas que están relacionados con el id_entrenador
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const queryEjercicios = 'SELECT * FROM tb_ejercicios e WHERE e.id_ejercicio = ?';
+            connection.query(queryEjercicios, [id_ejercicio], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Devuelve el ejercicio correspondiente al ID
+            });
         });
     });
 };
 
+// 3. Crear un nuevo ejercicio
 const crearEjercicio = (nuevoEjercicio) => {
     return new Promise((resolve, reject) => {
-        const queryInsertEjercicio = `
-            INSERT INTO tb_ejercicios (
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const queryInsertEjercicio = `
+                INSERT INTO tb_ejercicios (
+                    id_entrenador, 
+                    id_grupo_muscular, 
+                    nombre, 
+                    img_1, 
+                    img_2, 
+                    img_3, 
+                    descripcion, 
+                    link_video
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+            `;
+
+            const { 
                 id_entrenador, 
                 id_grupo_muscular, 
                 nombre, 
@@ -32,72 +59,70 @@ const crearEjercicio = (nuevoEjercicio) => {
                 img_2, 
                 img_3, 
                 descripcion, 
-                link_video
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-        `; // Inserta un nuevo ejercicio en la tabla
+                link_video 
+            } = nuevoEjercicio;
 
-        const { 
-            id_entrenador, 
-            id_grupo_muscular, 
-            nombre, 
-            img_1, 
-            img_2, 
-            img_3, 
-            descripcion, 
-            link_video 
-        } = nuevoEjercicio;
-
-        conexion.query(queryInsertEjercicio, [id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados.insertId); // Devuelve el ID del nuevo ejercicio creado
+            connection.query(queryInsertEjercicio, [id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados.insertId); // Devuelve el ID del nuevo ejercicio creado
+            });
         });
     });
 };
 
-
-const actualizarEjercicio = ( ejercicio ) => {
+// 4. Actualizar un ejercicio existente
+const actualizarEjercicio = (ejercicio) => {
     return new Promise((resolve, reject) => {
-        const queryUpdateEjercicio = `
-            UPDATE tb_ejercicios
-            SET 
-                id_entrenador = ?,
-                id_grupo_muscular = ?,
-                nombre = ?,
-                img_1 = ?,
-                img_2 = ?,
-                img_3 = ?,
-                descripcion = ?,
-                link_video = ?
-            WHERE id_ejercicio = ?;
-        `; // Actualizamos todos los campos relevantes
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
 
-        const { id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio } = ejercicio;
+            const queryUpdateEjercicio = `
+                UPDATE tb_ejercicios
+                SET 
+                    id_entrenador = ?,
+                    id_grupo_muscular = ?,
+                    nombre = ?,
+                    img_1 = ?,
+                    img_2 = ?,
+                    img_3 = ?,
+                    descripcion = ?,
+                    link_video = ?
+                WHERE id_ejercicio = ?;
+            `;
 
-        conexion.query(queryUpdateEjercicio, [id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados); // Responde con el resultado de la actualización
+            const { id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio } = ejercicio;
+
+            connection.query(queryUpdateEjercicio, [id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Responde con el resultado de la actualización
+            });
         });
     });
 };
 
-
-const eliminarEjercicioPorId = ( idEjercicio ) => {
+// 5. Eliminar un ejercicio por su ID
+const eliminarEjercicioPorId = (idEjercicio) => {
     return new Promise((resolve, reject) => {
-        const queryDeleteEjercicio = 'DELETE FROM tb_ejercicios WHERE id_ejercicio = ?';
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
 
-        conexion.query(queryDeleteEjercicio, [idEjercicio], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados); // Devuelve el resultado de la eliminación
+            const queryDeleteEjercicio = 'DELETE FROM tb_ejercicios WHERE id_ejercicio = ?';
+
+            connection.query(queryDeleteEjercicio, [idEjercicio], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Devuelve el resultado de la eliminación
+            });
         });
     });
 };
-
 
 module.exports = {
     listarEjercicioPorGrupoMuscular,
     listarEjercicioById,
+    crearEjercicio,
     actualizarEjercicio,
     eliminarEjercicioPorId,
-    crearEjercicio
-
 };
