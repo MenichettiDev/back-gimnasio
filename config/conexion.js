@@ -2,8 +2,9 @@ require('dotenv').config(); // Cargar variables de entorno desde el archivo .env
 
 const mysql = require('mysql');
 
-// Usar las variables de entorno
-const conexion = mysql.createConnection({
+// Crear un pool de conexiones
+const conexion = mysql.createPool({
+    connectionLimit: 10, // Número máximo de conexiones en el pool
     host: process.env.DB_HOST, // Usar la variable de entorno DB_HOST
     port: process.env.DB_PORT, // Usar la variable de entorno DB_PORT
     user: process.env.DB_USER, // Usar la variable de entorno DB_USER
@@ -12,17 +13,13 @@ const conexion = mysql.createConnection({
 });
 
 // Verificación de la conexión
-conexion.connect((error) => {
-    console.log('DB_HOST:', process.env.DB_HOST);
-    console.log('DB_PORT:', process.env.DB_PORT);
-    console.log('DB_USER:', process.env.DB_USER);
-    console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-    console.log('DB_DATABASE:', process.env.DB_DATABASE);
+conexion.getConnection((error, connection) => {
     if (error) {
-        console.error('Error al conectar a la base de datos:', error.stack);
+        console.error('Error al conectar al pool de conexiones:', error.stack);
         return;
     }
-    console.log('Conectado a la base de datos como ID ' + conexion.threadId);
+    console.log('Conectado al pool de conexiones como ID ' + connection.threadId);
+    connection.release(); // Liberar la conexión después de verificarla
 });
 
 module.exports = conexion;
