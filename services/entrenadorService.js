@@ -1,30 +1,43 @@
 const conexion = require('../config/conexion');
-
-
-
+//pool aplicado
+// 1. Obtener todos los entrenadores
 const obtenerEntrenadores = () => {
     return new Promise((resolve, reject) => {
-        const queryPersonas = 'SELECT * FROM tb_entrenador, tb_persona WHERE tb_persona.dni = tb_entrenador.dni'; // Aquí eliminamos la condición del email
-        conexion.query(queryPersonas, (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados); // Devuelve los datos de todas las personas
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const queryPersonas = `
+                SELECT * 
+                FROM tb_entrenador 
+                JOIN tb_persona ON tb_persona.dni = tb_entrenador.dni
+            `;
+
+            connection.query(queryPersonas, (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Devuelve los datos de todas las personas
+            });
         });
     });
 };
 
-const obtenerEntrenadorPorPersona = ( idPersona ) => {
-    return new Promise(( resolve, reject ) => {
-        const queryEntrenador = 'SELECT * FROM tb_entrenador WHERE id_persona = ?'; // Filtramos por id_persona
-        conexion.query(queryEntrenador, [idPersona], (error, resultados) => {
-            if (error) return reject(error);
-            resolve( resultados ); // Devuelve el entrenador relacionado con la id_persona
+// 2. Obtener un entrenador por ID de persona
+const obtenerEntrenadorPorPersona = (idPersona) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const queryEntrenador = 'SELECT * FROM tb_entrenador WHERE id_persona = ?';
+            connection.query(queryEntrenador, [idPersona], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Devuelve el entrenador relacionado con la id_persona
+            });
         });
     });
 };
-
 
 module.exports = {
     obtenerEntrenadores,
     obtenerEntrenadorPorPersona,
-
 };
