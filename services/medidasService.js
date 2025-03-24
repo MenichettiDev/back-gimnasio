@@ -3,10 +3,15 @@ const conexion = require('../config/conexion');
 // 1. Listar todas las medidas
 const listarMedidas = () => {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT * FROM tb_medidas';
-        conexion.query(query, (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados);
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const query = 'SELECT * FROM tb_medidas';
+            connection.query(query, (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Devuelve todas las medidas
+            });
         });
     });
 };
@@ -14,10 +19,15 @@ const listarMedidas = () => {
 // 2. Obtener una medida por ID
 const obtenerMedidaPorId = (id_medida) => {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT * FROM tb_medidas WHERE id_medida = ?';
-        conexion.query(query, [id_medida], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados[0]); // Devuelve la primera coincidencia (única)
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const query = 'SELECT * FROM tb_medidas WHERE id_medida = ?';
+            connection.query(query, [id_medida], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados[0]); // Devuelve la primera coincidencia (única)
+            });
         });
     });
 };
@@ -25,10 +35,15 @@ const obtenerMedidaPorId = (id_medida) => {
 // 3. Obtener todas las medidas de un atleta por su ID
 const obtenerMedidasPorAtleta = (id_atleta) => {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT * FROM tb_medidas WHERE id_atleta = ?';
-        conexion.query(query, [id_atleta], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados); // Devuelve todas las medidas del atleta
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const query = 'SELECT * FROM tb_medidas WHERE id_atleta = ?';
+            connection.query(query, [id_atleta], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados); // Devuelve todas las medidas del atleta
+            });
         });
     });
 };
@@ -36,10 +51,19 @@ const obtenerMedidasPorAtleta = (id_atleta) => {
 // 4. Crear una nueva medida
 const crearMedida = (id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal) => {
     return new Promise((resolve, reject) => {
-        const query = 'INSERT INTO tb_medidas (id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        conexion.query(query, [id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados.insertId); // Devuelve el ID de la nueva medida
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const query = `
+                INSERT INTO tb_medidas 
+                (id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+            connection.query(query, [id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados.insertId); // Devuelve el ID de la nueva medida
+            });
         });
     });
 };
@@ -47,10 +71,19 @@ const crearMedida = (id_atleta, fecha_medicion, peso, altura, biceps, pecho, hom
 // 5. Actualizar una medida existente
 const actualizarMedida = (id_medida, id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal) => {
     return new Promise((resolve, reject) => {
-        const query = 'UPDATE tb_medidas SET id_atleta = ?, fecha_medicion = ?, peso = ?, altura = ?, biceps = ?, pecho = ?, hombros = ?, cintura = ?, gluteos = ?, cuadriceps = ?, gemelos = ?, antebrazo = ?, cuello = ?, grasa_corporal = ? WHERE id_medida = ?';
-        conexion.query(query, [id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal, id_medida], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados.affectedRows); // Devuelve el número de filas afectadas
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const query = `
+                UPDATE tb_medidas 
+                SET id_atleta = ?, fecha_medicion = ?, peso = ?, altura = ?, biceps = ?, pecho = ?, hombros = ?, cintura = ?, gluteos = ?, cuadriceps = ?, gemelos = ?, antebrazo = ?, cuello = ?, grasa_corporal = ? 
+                WHERE id_medida = ?
+            `;
+            connection.query(query, [id_atleta, fecha_medicion, peso, altura, biceps, pecho, hombros, cintura, gluteos, cuadriceps, gemelos, antebrazo, cuello, grasa_corporal, id_medida], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados.affectedRows); // Devuelve el número de filas afectadas
+            });
         });
     });
 };
@@ -58,10 +91,15 @@ const actualizarMedida = (id_medida, id_atleta, fecha_medicion, peso, altura, bi
 // 6. Eliminar una medida
 const eliminarMedida = (id) => {
     return new Promise((resolve, reject) => {
-        const query = 'DELETE FROM tb_medidas WHERE id_medida = ?';
-        conexion.query(query, [id], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados.affectedRows); // Devuelve el número de filas afectadas
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const query = 'DELETE FROM tb_medidas WHERE id_medida = ?';
+            connection.query(query, [id], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados.affectedRows); // Devuelve el número de filas afectadas
+            });
         });
     });
 };
@@ -69,7 +107,7 @@ const eliminarMedida = (id) => {
 module.exports = {
     listarMedidas,
     obtenerMedidaPorId,
-    obtenerMedidasPorAtleta, // Nuevo método
+    obtenerMedidasPorAtleta,
     crearMedida,
     actualizarMedida,
     eliminarMedida,
