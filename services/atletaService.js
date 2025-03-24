@@ -20,12 +20,29 @@ const listarAtletasPorIdPersona = ( id_persona ) => {
     });
 };
 
-const listarAtletasPorIdEntrenador = ( idEntrenador ) => {
+//pool 
+const listarAtletasPorIdEntrenador = (idEntrenador) => {
     return new Promise((resolve, reject) => {
-        const queryAtletas = `SELECT * FROM tb_atleta a, tb_persona p WHERE a.id_entrenador = ?`; 
-        conexion.query(queryAtletas, [idEntrenador], (error, resultados) => {
-            if (error) return reject(error);
-            resolve(resultados); 
+        // Obtener una conexión del pool
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            // Consulta SQL
+            const queryAtletas = `
+                SELECT * 
+                FROM tb_atleta a
+                JOIN tb_persona p ON a.id_persona = p.id_persona
+                WHERE a.id_entrenador = ?
+            `;
+
+            // Ejecutar la consulta
+            connection.query(queryAtletas, [idEntrenador], (error, resultados) => {
+                // Liberar la conexión después de usarla
+                connection.release();
+
+                if (error) return reject(error);
+                resolve(resultados);
+            });
         });
     });
 };

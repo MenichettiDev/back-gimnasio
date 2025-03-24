@@ -4,16 +4,16 @@ const { listarAtletas, listarAtletasPorIdEntrenador,
 listarAtletasPorIdPersona} = require('../services/atletaService');
 
 exports.obtenerAtletaByIdEntrenador = async (req, res) => {
-    const { id_persona } = req.body;
+    const { id_entrenador } = req.body;
 
-    if (!id_persona) {
+    if (!id_entrenador) {
 
-        return res.status(400).json({ message: 'El id_persona es obligatorio' });
+        return res.status(400).json({ message: 'El id_entrenador es obligatorio' });
     }
 
     try {
 
-        const resultados = await listarAtletasPorIdEntrenador(id_persona);
+        const resultados = await listarAtletasPorIdEntrenador(id_entrenador);
 
         if (resultados && resultados.length > 0) {
 
@@ -72,6 +72,7 @@ exports.obtenerAtletas = async (req, res) => {
     }
 };
 
+//pool ok
 exports.crearAtleta = async (req, res) => {
     try {
         // Extraer los datos del cuerpo de la solicitud
