@@ -671,7 +671,6 @@ const eliminarRutinaConRelaciones = (id_rutina) => {
 
 
 module.exports = {
-    listarRutinaByIdCreador,
     listarRutinasByIdAtleta,
     crearRutinaYAsignarAtleta,
     editarRutinaYAsignarAtleta,
