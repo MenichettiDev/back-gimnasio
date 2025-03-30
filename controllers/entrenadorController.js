@@ -73,3 +73,21 @@ exports.crearEntrenador = async (req, res) => {
         return res.status(500).json({ message: 'Error en la base de datos' });
     }
 };
+
+// Controlador para asignar gimnasios a un entrenador
+exports.asignarGimnasios = async (req, res) => {
+    try {
+        const { id_entrenador, id_gimnasios } = req.body;
+
+        // Validar que se proporcionen los datos necesarios
+        if (!id_entrenador || !Array.isArray(id_gimnasios) || id_gimnasios.length === 0) {
+            return res.status(400).json({ message: 'Faltan datos obligatorios para asignar gimnasios' });
+        }
+
+        const resultado = await asignarGimnasios(id_entrenador, id_gimnasios);
+        return res.status(200).json(resultado);
+    } catch (error) {
+        console.error('Error al asignar gimnasios:', error);
+        return res.status(500).json({ message: 'Error en la base de datos' });
+    }
+};

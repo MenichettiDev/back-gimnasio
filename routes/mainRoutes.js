@@ -26,6 +26,7 @@ router.post('/menusByIdAcceso', menuController.obtenerMenusByIdAcceso );
 //Entrenador
 router.post('/getEntrenadorByIdPersona', entrenadorController.obtenerEntrenadorByIdPersona );
 router.post('/crearEntrenador', entrenadorController.crearEntrenador );
+router.post('/asignar-gimnasio', entrenadorController.asignarGimnasios );
 router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
 
 

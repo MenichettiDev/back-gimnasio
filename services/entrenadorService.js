@@ -133,8 +133,69 @@ const crearEntrenador = (entrenadorData) => {
     });
 };
 
+// Asignar gimnasios a un entrenador
+const asignarGimnasios = async (id_entrenador, id_gimnasios) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            connection.beginTransaction((error) => {
+                if (error) {
+                    connection.release();
+                    return reject(error);
+                }
+
+                // Eliminar asignaciones existentes para este entrenador
+                const queryDeleteAsignaciones = `
+                    DELETE FROM tb_entrenador_gimnasio WHERE id_entrenador = ?
+                `;
+
+                connection.query(queryDeleteAsignaciones, [id_entrenador], (error) => {
+                    if (error) {
+                        return connection.rollback(() => {
+                            connection.release();
+                            reject(error);
+                        });
+                    }
+
+                    // Insertar nuevas asignaciones
+                    const queryInsertAsignaciones = `
+                        INSERT INTO tb_entrenador_gimnasio (id_entrenador, id_gimnasio) VALUES ?
+                    `;
+
+                    const values = id_gimnasios.map(id_gimnasio => [id_entrenador, id_gimnasio]);
+
+                    connection.query(queryInsertAsignaciones, [values], (error, result) => {
+                        if (error) {
+                            return connection.rollback(() => {
+                                connection.release();
+                                reject(error);
+                            });
+                        }
+
+                        connection.commit((commitError) => {
+                            if (commitError) {
+                                return connection.rollback(() => {
+                                    connection.release();
+                                    reject(commitError);
+                                });
+                            }
+
+                            connection.release();
+                            resolve({
+                                mensaje: "Gimnasios asignados exitosamente"
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+};
+
 module.exports = {
     obtenerEntrenadores,
     obtenerEntrenadorPorPersona,
     crearEntrenador,
+    asignarGimnasios
 };
