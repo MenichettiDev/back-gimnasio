@@ -9,32 +9,28 @@ const autenticarUsuario = (email, contrasenia) => {
 
             const query = `SELECT * FROM tb_persona WHERE email = ?`;
             connection.query(query, [email], async (error, resultados) => {
-                connection.release(); // Liberar la conexión
-
+                connection.release();
                 if (error) return reject(error);
+                if (resultados.length === 0) return resolve(null); // No existe el email
 
-                // Si se encontró un usuario con ese email
-                if (resultados.length > 0) {
-                    const usuario = resultados[0];
+                const usuario = resultados[0];
 
-                    try {
-                        // Compara la contraseña proporcionada con el hash almacenado en la base de datos
-                        const coinciden = await bcrypt.compare(contrasenia, usuario.password);
-                        if (coinciden) {
-                            resolve(resultados); // Autenticación exitosa
-                        } else {
-                            resolve([]); // Contraseña incorrecta
-                        }
-                    } catch (bcryptError) {
-                        reject(bcryptError); // Error al comparar contraseñas
+                try {
+                    const coinciden = await bcrypt.compare(contrasenia, usuario.password);
+                    if (coinciden) {
+                        resolve(usuario); // Usuario válido
+                    } else {
+                        resolve(null); // Contraseña incorrecta
                     }
-                } else {
-                    resolve([]); // No se encontró ningún usuario con ese email
+                } catch (err) {
+                    reject(err);
                 }
             });
         });
     });
 };
+
+
 
 // 2. Obtener usuario logueado
 const obtenerUsuarioLogueado = (email) => {

@@ -17,40 +17,36 @@ exports.authMiddleware = (req, res, next) => {
 };
 
 exports.postLogin = async (req, res) => {
-    const { usuario, contrasenia } = req.body; //Desestructuración de las variables
-    console.log(usuario)
+    const { usuario, contrasenia } = req.body;
+
     try {
-        //Llamamos a la función del servicio para autenticar al médico
-        const resultados = await autenticarUsuario(usuario, contrasenia);
+        const usuarioValido = await autenticarUsuario(usuario, contrasenia);
 
-        if ( resultados ) {
-            //Si se encuentra el usuario, obtener el médico logueado
-            const usuarioObtenido = await obtenerUsuarioLogueado( usuario );
-
-            if (usuarioObtenido ) {
-                //Acá almacenamos el nombre y la matrícula del médico en la sesión
-                // req.session.nombre = `${usuarioObtenido[0].nombre} ${usuarioObtenido[0].apellido}`;
-                // req.session.matricula = usuarioObtenido;
-                // req.session.isLoggedIn = true; //Este true marca al usuario como autenticado
-                // req.session.usuario = usuarioObtenido; //Acá se suarda el nombre de usuario
-
-                //Respondes con el usuario autenticado y mensaje de éxito
-                // return res.json( req.session.usuario );
-                console.log( usuarioObtenido );
-                return res.json( usuarioObtenido );
-            } else {
-                //Si el médico no se encuentra indicamos el error
-                return res.status(404).json({ message: 'User no encontrado' });
-            }
-        } else {
-            //Si las credenciales son incorrectas lo indicamos
-            return res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
+        if (!usuarioValido) {
+            return res.status(401).json({
+                success: false,
+                message: 'Credenciales incorrectas'
+            });
         }
+
+        const usuarioLogueado = await obtenerUsuarioLogueado(usuarioValido.email);
+
+        // Ya tenés al usuario válido
+        return res.json({
+            success: true,
+            usuario: usuarioValido
+        });
+
     } catch (error) {
-        console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        console.error('Error al autenticar:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor'
+        });
     }
 };
+
+
 
 //Este controlador lo usamos para verificar si el usuario está logueado
 exports.getLogin = (req, res) => {
@@ -82,3 +78,6 @@ exports.logout = (req, res) => {
         res.json({ message: 'Sesión cerrada exitosamente' });
     });
 };
+
+
+
