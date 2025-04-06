@@ -1,5 +1,5 @@
 // Importar el servicio necesario para la consulta
-const { obtenerEntrenadorPorPersona, obtenerEntrenadores } = require('../services/entrenadorService');
+const { obtenerEntrenadorPorPersona, obtenerEntrenadores, crearEntrenador } = require('../services/entrenadorService');
 
 exports.obtenerEntrenadorByIdPersona = async (req, res) => {
     const { id_persona } = req.body; // Obtener el id_persona del cuerpo de la solicitud (req.body)
@@ -40,6 +40,54 @@ exports.obtenerEntrenadores = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
+        return res.status(500).json({ message: 'Error en la base de datos' });
+    }
+};
+
+exports.crearEntrenador = async (req, res) => {
+    try {
+        // Extraer los datos del cuerpo de la solicitud
+        const entrenadorData = req.body;
+
+        // Validar que se proporcionen los datos necesarios
+        if (
+            !entrenadorData.dni ||
+            !entrenadorData.nombre ||
+            !entrenadorData.apellido ||
+            !entrenadorData.fecha_nacimiento ||
+            !entrenadorData.email ||
+            !entrenadorData.fecha_ingreso
+        ) {
+            return res.status(400).json({
+                message: 'Faltan datos obligatorios para crear el entrenador'
+            });
+        }
+
+        // Llamar al servicio para crear el entrenador
+        const resultado = await crearEntrenador(entrenadorData);
+
+        // Responder con éxito
+        return res.status(201).json(resultado);
+    } catch (error) {
+        console.error('Error al crear el entrenador:', error);
+        return res.status(500).json({ message: 'Error en la base de datos' });
+    }
+};
+
+// Controlador para asignar gimnasios a un entrenador
+exports.asignarGimnasios = async (req, res) => {
+    try {
+        const { id_entrenador, id_gimnasios } = req.body;
+
+        // Validar que se proporcionen los datos necesarios
+        if (!id_entrenador || !Array.isArray(id_gimnasios) || id_gimnasios.length === 0) {
+            return res.status(400).json({ message: 'Faltan datos obligatorios para asignar gimnasios' });
+        }
+
+        const resultado = await asignarGimnasios(id_entrenador, id_gimnasios);
+        return res.status(200).json(resultado);
+    } catch (error) {
+        console.error('Error al asignar gimnasios:', error);
         return res.status(500).json({ message: 'Error en la base de datos' });
     }
 };
