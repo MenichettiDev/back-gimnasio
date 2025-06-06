@@ -40,68 +40,103 @@ const crearPago = (nuevoPago) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
 
-            // Iniciar una transacción
             connection.beginTransaction((error) => {
                 if (error) {
-                    connection.release(); // Liberar la conexión
+                    connection.release();
                     return reject(error);
                 }
 
                 const queryInsertPago = `
                     INSERT INTO tb_pago (
                         id_atleta, 
-                        id_membresia, 
+                        id_entrenador, 
+                        id_gimnasio,  
                         fecha_pago, 
                         monto, 
                         id_forma_pago
-                    ) VALUES (?, ?, ?, ?, ?);
+                    ) VALUES (?, ?, ?, ?, ?, ?);
                 `;
 
-                const { id_atleta, id_membresia, fecha_pago, monto, id_forma_pago } = nuevoPago;
+                const { id_atleta = null, id_entrenador = null, id_gimnasio = null, fecha_pago, monto, id_forma_pago } = nuevoPago;
 
-                // Insertar el pago
-                connection.query(queryInsertPago, [id_atleta, id_membresia, fecha_pago, monto, id_forma_pago], (error, resultados) => {
-                    if (error) {
-                        connection.rollback(() => {
-                            connection.release(); // Liberar la conexión
-                            reject(error);
-                        });
-                        return;
-                    }
-
-                    const nuevoPagoId = resultados.insertId;
-
-                    const queryUpdateAtleta = `
-                        UPDATE tb_atleta 
-                        SET ultimo_pago = ?, estado = "activo"
-                        WHERE id_atleta = ?;
-                    `;
-
-                    // Actualizar la fecha de último pago
-                    connection.query(queryUpdateAtleta, [fecha_pago, id_atleta], (error, resultados) => {
+                connection.query(
+                    queryInsertPago,
+                    [id_atleta, id_entrenador, id_gimnasio, fecha_pago, monto, id_forma_pago],
+                    (error, resultados) => {
                         if (error) {
                             connection.rollback(() => {
-                                connection.release(); // Liberar la conexión
+                                connection.release();
                                 reject(error);
                             });
                             return;
                         }
 
-                        // Si todo está bien, hacer commit
-                        connection.commit((error) => {
-                            if (error) {
-                                connection.rollback(() => {
-                                    connection.release(); // Liberar la conexión
-                                    reject(error);
-                                });
-                                return;
-                            }
+                        const nuevoPagoId = resultados.insertId;
 
-                            connection.release(); // Liberar la conexión
-                            resolve(nuevoPagoId); // Resolver con el ID del nuevo pago
-                        });
-                    });
-                });
+                        // Función para actualizar la tabla correspondiente
+                        const updates = [];
+                        if (id_atleta) {
+                            updates.push(new Promise((res, rej) => {
+                                const query = `
+                                    UPDATE tb_atleta 
+                                    SET ultimo_pago = ?
+                                    WHERE id_atleta = ?;
+                                `;
+                                connection.query(query, [fecha_pago, id_atleta], (err) => {
+                                    if (err) return rej(err);
+                                    res();
+                                });
+                            }));
+                        }
+                        if (id_entrenador) {
+                            updates.push(new Promise((res, rej) => {
+                                const query = `
+                                    UPDATE tb_entrenador 
+                                    SET ultimo_pago = ?
+                                    WHERE id_entrenador = ?;
+                                `;
+                                connection.query(query, [fecha_pago, id_entrenador], (err) => {
+                                    if (err) return rej(err);
+                                    res();
+                                });
+                            }));
+                        }
+                        if (id_gimnasio) {
+                            updates.push(new Promise((res, rej) => {
+                                const query = `
+                                    UPDATE tb_gimnasio 
+                                    SET ultimo_pago = ?
+                                    WHERE id_gimnasio = ?;
+                                `;
+                                connection.query(query, [fecha_pago, id_gimnasio], (err) => {
+                                    if (err) return rej(err);
+                                    res();
+                                });
+                            }));
+                        }
+
+                        Promise.all(updates)
+                            .then(() => {
+                                connection.commit((error) => {
+                                    if (error) {
+                                        connection.rollback(() => {
+                                            connection.release();
+                                            reject(error);
+                                        });
+                                        return;
+                                    }
+                                    connection.release();
+                                    resolve(nuevoPagoId);
+                                });
+                            })
+                            .catch((updateError) => {
+                                connection.rollback(() => {
+                                    connection.release();
+                                    reject(updateError);
+                                });
+                            });
+                    }
+                );
             });
         });
     });

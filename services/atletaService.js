@@ -251,8 +251,8 @@ const crearAtleta = (atletaData) => {
 
                     const atletaValues = [
                         idPersona,
-                        atletaData.id_entrenador,
-                        atletaData.id_gimnasio,
+                        atletaData.id_entrenador || null, // Si no se proporciona id_entrenador, se inserta NULL
+                        atletaData.id_gimnasio || null, // Si no se proporciona id_gimnasio, se inserta NULL
                         'activo' // Por defecto, el estado será 'activo'
                     ];
 

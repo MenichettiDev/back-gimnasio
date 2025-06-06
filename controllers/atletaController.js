@@ -79,7 +79,7 @@ exports.crearAtleta = async (req, res) => {
         const atletaData = req.body;
 
         // Validar que se proporcionen los datos necesarios
-        if (!atletaData.dni || !atletaData.nombre || !atletaData.apellido || !atletaData.fecha_nacimiento || !atletaData.email || !atletaData.id_entrenador || !atletaData.id_gimnasio) {
+        if (!atletaData.dni || !atletaData.nombre || !atletaData.apellido || !atletaData.fecha_nacimiento || !atletaData.email ) {
             return res.status(400).json({ message: 'Faltan datos obligatorios para crear el atleta' });
         }
 
