@@ -34,7 +34,7 @@ exports.postLogin = async (req, res) => {
         // Ya tenés al usuario válido
         return res.json({
             success: true,
-            usuario: usuarioValido
+            usuario: usuarioLogueado
         });
 
     } catch (error) {

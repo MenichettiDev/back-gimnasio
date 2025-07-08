@@ -43,6 +43,7 @@ const obtenerUsuarioLogueado = (email) => {
                 FROM tb_persona p
                 LEFT JOIN tb_atleta a ON p.id_persona = a.id_persona
                 LEFT JOIN tb_entrenador e ON p.id_persona = e.id_persona
+                LEFT JOIN tb_gimnasio g ON p.id_persona = g.id_persona
                 WHERE p.email = ?
             `;
 
