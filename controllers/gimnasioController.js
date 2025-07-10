@@ -1,5 +1,5 @@
 // Importar el servicio necesario para la consulta
-const { listarGimnasioPorIdEntrenador, listarGimnasios, listarGimnasioPorIdAtleta } = require('../services/gimnasioService');
+const { listarGimnasioPorIdEntrenador, listarGimnasios, listarGimnasioPorIdAtleta, crearGimnasio } = require('../services/gimnasioService');
 
 
 
@@ -16,7 +16,7 @@ exports.obtenerGimnasios = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' , error});
+        return res.status(500).json({ message: 'Error en la base de datos', error });
     }
 };
 
@@ -67,5 +67,35 @@ exports.obtenerGimnasioPorIdAtleta = async (req, res) => {
     } catch (error) {
         console.error('Error en la consulta:', error);
         return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
+    }
+};
+
+
+exports.crearGimnasio = async (req, res) => {
+    try {
+        const gimnasioData = req.body;
+
+        // Validar que se proporcionen los datos necesarios
+        if (
+            !gimnasioData.dni ||
+            !gimnasioData.nombre ||
+            !gimnasioData.apellido ||
+            !gimnasioData.fecha_nacimiento ||
+            !gimnasioData.email ||
+            !gimnasioData.nombre_gimnasio
+        ) {
+            return res.status(400).json({
+                message: 'Faltan datos obligatorios para crear el gimnasio'
+            });
+        }
+
+        // Llamar al servicio para crear el gimnasio
+        const resultado = await crearGimnasio(gimnasioData);
+
+        // Responder con éxito
+        return res.status(201).json(resultado);
+    } catch (error) {
+        console.error('Error al crear el gimnasio:', error);
+        return res.status(500).json({ message: 'Error en la base de datos' });
     }
 };
