@@ -19,23 +19,23 @@ const metasController = require('../controllers/metasController');
 
 
 // Ruta para obtener los menús de una persona por su id_persona
-router.get('/getMenus', menuController.obtenerMenus );
-router.post('/menusByIdAcceso', menuController.obtenerMenusByIdAcceso ); 
+router.get('/getMenus', menuController.obtenerMenus);
+router.post('/menusByIdAcceso', menuController.obtenerMenusByIdAcceso);
 
 
 //Entrenador
-router.post('/getEntrenadorByIdPersona', entrenadorController.obtenerEntrenadorByIdPersona );
-router.post('/crearEntrenador', entrenadorController.crearEntrenador );
-router.post('/asignar-gimnasio', entrenadorController.asignarGimnasios );
-router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores );
+router.post('/getEntrenadorByIdPersona', entrenadorController.obtenerEntrenadorByIdPersona);
+router.post('/crearEntrenador', entrenadorController.crearEntrenador);
+router.post('/asignar-gimnasio', entrenadorController.asignarGimnasios);
+router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores);
 
 
 //Atleta
-router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador );
-router.post('/getAtletaByIdPersona', atletaController.obtenerAtletaByIdPersona );
-router.get('/getAtletas', atletaController.obtenerAtletas );
-router.post('/crearAtleta', atletaController.crearAtleta );
-router.post('/editarAtleta', atletaController.editarAtleta );
+router.post('/getAtletaById', atletaController.obtenerAtletaByIdEntrenador);
+router.post('/getAtletaByIdPersona', atletaController.obtenerAtletaByIdPersona);
+router.get('/getAtletas', atletaController.obtenerAtletas);
+router.post('/crearAtleta', atletaController.crearAtleta);
+router.post('/editarAtleta', atletaController.editarAtleta);
 
 
 // Rutas para Persona
@@ -47,15 +47,15 @@ router.delete('/personas/:id_persona', usuarioController.eliminarPersona); // El
 
 
 //Ejercicio
-router.post('/crearEjercicio', ejercicioController.createEjercicio );
-router.post('/getEjercicioByGrupoMuscular', ejercicioController.getEjercicioPorGrupoMuscular );
-router.post('/getEjercicioByIdEjercicio', ejercicioController.getEjercicioById );
-router.post('/updateEjercicio', ejercicioController.updateEjercicio );
-router.post('/deleteEjercicio', ejercicioController.deleteEjercicio );
+router.post('/crearEjercicio', ejercicioController.createEjercicio);
+router.post('/getEjercicioByGrupoMuscular', ejercicioController.getEjercicioPorGrupoMuscular);
+router.post('/getEjercicioByIdEjercicio', ejercicioController.getEjercicioById);
+router.post('/updateEjercicio', ejercicioController.updateEjercicio);
+router.post('/deleteEjercicio', ejercicioController.deleteEjercicio);
 
 
 //Tipo de repeticion de ejercicio
-router.get('/getRepeticion', repeticionController.obtenerRepeticiones );
+router.get('/getRepeticion', repeticionController.obtenerRepeticiones);
 // router.get('/repeticiones', repeticionController.obtenerRepeticiones);
 router.get('/repeticiones/:id', repeticionController.obtenerRepeticionPorId);
 router.post('/repeticiones', repeticionController.crearRepeticion);
@@ -64,9 +64,10 @@ router.delete('/repeticiones/:id', repeticionController.eliminarRepeticion);
 
 
 //Gimnasios
-router.post('/getGimnasioByIdEntrenador', gimnasioController.obtenerGimnasioPorIdEntrenador );
-router.post('/getGimnasioByIdAtleta', gimnasioController.obtenerGimnasioPorIdAtleta );
-router.get('/getGimnasios', gimnasioController.obtenerGimnasios );
+router.post('/getGimnasioByIdEntrenador', gimnasioController.obtenerGimnasioPorIdEntrenador);
+router.post('/getGimnasioByIdAtleta', gimnasioController.obtenerGimnasioPorIdAtleta);
+router.get('/getGimnasios', gimnasioController.obtenerGimnasios);
+router.post('/crearGimnasio', gimnasioController.crearGimnasio);
 
 
 //Grupos musculares
@@ -79,24 +80,24 @@ router.delete('/grupos-musculares/:id', gruposMuscularesController.eliminarGrupo
 
 
 //Membresias
-router.post('/getMembresiasByIdGimnaiso', membresiaController.obtenerMembresiaByGimnasio );
-router.get('/getMembresias', membresiaController.obtenerMembresias );
+router.post('/getMembresiasByIdGimnaiso', membresiaController.obtenerMembresiaByGimnasio);
+router.get('/getMembresias', membresiaController.obtenerMembresias);
 
 
 //Rutinas
-router.get('/getRutinasFree', rutinaController.obtenerRutinasFree );
-router.post('/getRutinaByIdAtleta', rutinaController.obtenerRutinaByIdAtleta );
-router.post('/getRutinaByIdCreador', rutinaController.obtenerRutinaByIdCreador );
-router.post('/getRutinaByIdRutina', rutinaController.obtenerRutinaByIdRutina );
-router.post('/crearRutinaYAsignarAtleta', rutinaController.crearRutinaYAsignarAtleta );
-router.post('/editarRutina', rutinaController.editarRutinaYAsignarAtleta );
-router.post('/eliminarRutina', rutinaController.eliminarRutina );
-router.post('/getRutinasFiltradas', rutinaController.filtrarRutinas );
+router.get('/getRutinasFree', rutinaController.obtenerRutinasFree);
+router.post('/getRutinaByIdAtleta', rutinaController.obtenerRutinaByIdAtleta);
+router.post('/getRutinaByIdCreador', rutinaController.obtenerRutinaByIdCreador);
+router.post('/getRutinaByIdRutina', rutinaController.obtenerRutinaByIdRutina);
+router.post('/crearRutinaYAsignarAtleta', rutinaController.crearRutinaYAsignarAtleta);
+router.post('/editarRutina', rutinaController.editarRutinaYAsignarAtleta);
+router.post('/eliminarRutina', rutinaController.eliminarRutina);
+router.post('/getRutinasFiltradas', rutinaController.filtrarRutinas);
 
 
 
 //Frase
-router.get('/getFraseAleatoria', fraseController.obtenerFraseAleatoria );
+router.get('/getFraseAleatoria', fraseController.obtenerFraseAleatoria);
 
 
 // Rutas para las formas de pago
