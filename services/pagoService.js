@@ -53,15 +53,16 @@ const crearPago = (nuevoPago) => {
                         id_gimnasio,  
                         fecha_pago, 
                         monto, 
-                        id_forma_pago
-                    ) VALUES (?, ?, ?, ?, ?, ?);
+                        id_forma_pago,
+                        concepto
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?);
                 `;
 
-                const { id_atleta = null, id_entrenador = null, id_gimnasio = null, fecha_pago, monto, id_forma_pago } = nuevoPago;
+                const { id_atleta = null, id_entrenador = null, id_gimnasio = null, fecha_pago, monto, id_forma_pago, concepto } = nuevoPago;
 
                 connection.query(
                     queryInsertPago,
-                    [id_atleta, id_entrenador, id_gimnasio, fecha_pago, monto, id_forma_pago],
+                    [id_atleta, id_entrenador, id_gimnasio, fecha_pago, monto, id_forma_pago, concepto],
                     (error, resultados) => {
                         if (error) {
                             connection.rollback(() => {

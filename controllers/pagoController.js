@@ -58,13 +58,13 @@ exports.getPagoPorId = async (req, res) => {
 
 // 3. Crear un nuevo pago
 exports.createPago = async (req, res) => {
-    const { id_atleta, id_entrenador , id_gimnasio , id_membresia, fecha_pago, monto, id_forma_pago } = req.body;
-    if (  !fecha_pago || !monto || !id_forma_pago) {
+    const { id_atleta, id_entrenador, id_gimnasio, id_membresia, fecha_pago, monto, id_forma_pago, concepto } = req.body;
+    if (!fecha_pago || !monto || !id_forma_pago) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios' });
     }
 
     try {
-        const nuevoPago = { id_atleta,id_entrenador , id_gimnasio , fecha_pago, monto, id_forma_pago };
+        const nuevoPago = { id_atleta, id_entrenador, id_gimnasio, fecha_pago, monto, id_forma_pago, concepto };
         const idPagoCreado = await crearPago(nuevoPago);
         console.log('pago creado', idPagoCreado)
         if (idPagoCreado) {
