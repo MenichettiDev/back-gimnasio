@@ -1,7 +1,8 @@
 // Importar el servicio necesario para la consulta
-const { listarAtletas, listarAtletasPorIdEntrenador, 
-    crearAtleta, editarAtleta, 
-listarAtletasPorIdPersona} = require('../services/atletaService');
+const { listarAtletas, listarAtletasPorIdEntrenador,
+    crearAtleta, editarAtleta,
+    listarAtletasPorIdPersona,
+    listarAtletasPorIdGimnasio } = require('../services/atletaService');
 
 exports.obtenerAtletaByIdEntrenador = async (req, res) => {
     const { id_entrenador } = req.body;
@@ -30,6 +31,34 @@ exports.obtenerAtletaByIdEntrenador = async (req, res) => {
     }
 };
 
+
+exports.obtenerAtletaByIdGimnasio = async (req, res) => {
+    const { id_gimnasio } = req.body;
+
+    if (!id_gimnasio) {
+
+        return res.status(400).json({ message: 'El id_gimnasio es obligatorio' });
+    }
+
+    try {
+
+        const resultados = await listarAtletasPorIdGimnasio(id_gimnasio);
+
+        if (resultados && resultados.length > 0) {
+
+            return res.json({
+                atletas: resultados
+            });
+        } else {
+
+            return res.status(404).json({ message: 'No se encontraron atletas para este gimnasio' });
+        }
+    } catch (error) {
+        console.error('Error en la consulta:', error);
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
+    }
+};
+
 exports.obtenerAtletaByIdPersona = async (req, res) => {
     const { id_persona } = req.body;
 
@@ -44,7 +73,7 @@ exports.obtenerAtletaByIdPersona = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
 
-            return res.json( resultados[0]);
+            return res.json(resultados[0]);
         } else {
 
             return res.status(404).json({ message: 'No se encontraron atletas para este entrenador' });
@@ -79,7 +108,7 @@ exports.crearAtleta = async (req, res) => {
         const atletaData = req.body;
 
         // Validar que se proporcionen los datos necesarios
-        if (!atletaData.dni || !atletaData.nombre || !atletaData.apellido || !atletaData.fecha_nacimiento || !atletaData.email ) {
+        if (!atletaData.dni || !atletaData.nombre || !atletaData.apellido || !atletaData.fecha_nacimiento || !atletaData.email) {
             return res.status(400).json({ message: 'Faltan datos obligatorios para crear el atleta' });
         }
 

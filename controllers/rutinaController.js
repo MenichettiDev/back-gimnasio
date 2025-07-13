@@ -4,7 +4,7 @@ const { listarRutinaByIdAtleta, listarRutinaByIdCreador,
     editarRutinaYAsignarAtleta, eliminarRutinaConRelaciones,
     listarRutinaByIdRutina,
     listarRutinasByIdAtleta,
-buscarRutinasByFiltro
+    buscarRutinasByFiltro
 } = require('../services/rutinaService');
 
 exports.obtenerRutinaByIdAtleta = async (req, res) => {
@@ -36,14 +36,14 @@ exports.obtenerRutinaByIdAtleta = async (req, res) => {
 
 exports.filtrarRutinas = async (req, res) => {
     // Extraer los filtros del cuerpo de la solicitud
-    const { 
-        nombre = '', 
-        fechaDesde = null, 
-        fechaHasta = null, 
-        objetivo = '', 
-        nivelAtleta = '', 
-        cantidadDias = '', 
-        idCreador = null 
+    const {
+        nombre = '',
+        fechaDesde = null,
+        fechaHasta = null,
+        objetivo = '',
+        nivelAtleta = '',
+        cantidadDias = '',
+        idCreador = null
     } = req.body;
 
     // Validar que al menos un filtro esté presente
@@ -124,9 +124,9 @@ exports.obtenerRutinaByIdRutina = async (req, res) => {
 
         const resultados = await listarRutinaByIdRutina(id_rutina);
 
-        if (resultados ) {
+        if (resultados) {
 
-            return res.json( resultados
+            return res.json(resultados
             );
         } else {
 

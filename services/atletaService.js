@@ -168,25 +168,42 @@ const editarAtleta = (idAtleta, atletaData) => {
 
 
 // 4. Listar atletas por ID de entrenador
-const listarAtletasPorIdEntrenador = (idEntrenador) => {
+const listarAtletasPorIdEntrenador = (id_entrenador) => {
     return new Promise((resolve, reject) => {
-        // Obtener una conexión del pool
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
 
-            // Consulta SQL
             const queryAtletas = `
                 SELECT * 
                 FROM tb_atleta a
-                JOIN tb_persona p ON a.id_persona = p.id_persona
-                WHERE a.id_entrenador = ?
+                JOIN tb_persona p ON p.id_persona = a.id_persona
+                WHERE a.id_entrenador = ? or a.id_atleta = 0
             `;
 
-            // Ejecutar la consulta
-            connection.query(queryAtletas, [idEntrenador], (error, resultados) => {
-                // Liberar la conexión después de usarla
-                connection.release();
+            connection.query(queryAtletas, [id_entrenador], (error, resultados) => {
+                connection.release(); // Liberar la conexión
+                if (error) return reject(error);
+                resolve(resultados);
+            });
+        });
+    });
+};
 
+// 4. Listar atletas por ID de entrenador
+const listarAtletasPorIdGimnasio = (id_gimnasio) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+
+            const queryAtletas = `
+                SELECT * 
+                FROM tb_atleta a
+                JOIN tb_persona p ON p.id_persona = a.id_persona
+                WHERE a.id_gimnasio = ? or a.id_atleta = 0
+            `;
+
+            connection.query(queryAtletas, [id_gimnasio], (error, resultados) => {
+                connection.release(); // Liberar la conexión
                 if (error) return reject(error);
                 resolve(resultados);
             });
@@ -299,6 +316,7 @@ module.exports = {
     listarAtletasPorIdEntrenador,
     crearAtleta,
     editarAtleta,
-    listarAtletasPorIdPersona
+    listarAtletasPorIdPersona,
+    listarAtletasPorIdGimnasio
 
 };
