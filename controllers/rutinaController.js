@@ -8,7 +8,7 @@ const { listarRutinaByIdAtleta, listarRutinaByIdCreador,
 } = require('../services/rutinaService');
 
 exports.obtenerRutinaByIdAtleta = async (req, res) => {
-    const { id_atleta } = req.body;
+    const { id_atleta, id_entrenador, id_gimnasio } = req.body;
 
     if (!id_atleta) {
 

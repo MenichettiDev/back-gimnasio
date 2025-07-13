@@ -86,8 +86,8 @@ router.get('/getMembresias', membresiaController.obtenerMembresias);
 
 
 //Rutinas
-router.get('/getRutinasFree', rutinaController.obtenerRutinasFree);
 router.post('/getRutinaByIdAtleta', rutinaController.obtenerRutinaByIdAtleta);
+router.get('/getRutinasFree', rutinaController.obtenerRutinasFree);
 router.post('/getRutinaByIdCreador', rutinaController.obtenerRutinaByIdCreador);
 router.post('/getRutinaByIdRutina', rutinaController.obtenerRutinaByIdRutina);
 router.post('/crearRutinaYAsignarAtleta', rutinaController.crearRutinaYAsignarAtleta);

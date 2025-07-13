@@ -100,14 +100,14 @@ const listarRutinaByIdRutina = (id_rutina) => {
 };
 
 // 2. Listar rutinas por ID de atleta
-const listarRutinasByIdAtleta = (id_atleta) => {
+const listarRutinasByIdAtleta = (id_atleta, id_entrenador, id_gimnasio) => {
     return new Promise((resolve, reject) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
 
-            // Consulta para obtener las rutinas asignadas al atleta, ordenadas por fecha
+            // Consulta para obtener las rutinas asignadas al atleta y rutinas de atletas con el mismo entrenador o gimnasio
             const queryRutinas = `
-                SELECT 
+                 SELECT DISTINCT
                     r.id_rutina,
                     r.id_creador,
                     r.nombre,
@@ -119,7 +119,10 @@ const listarRutinasByIdAtleta = (id_atleta) => {
                     ra.fecha_asignacion
                 FROM tb_rutina r
                 LEFT JOIN tb_rutina_atleta ra ON r.id_rutina = ra.id_rutina
-                WHERE ra.id_atleta = ?
+                LEFT JOIN tb_atleta a ON ra.id_atleta = a.id_atleta 
+                WHERE ra.id_atleta = ? or ra.id_atleta = 0
+                   OR (a.id_entrenador = ? AND ? IS NOT NULL)
+                   OR (a.id_gimnasio = ? AND ? IS NOT NULL)
                 ORDER BY ra.fecha_asignacion DESC;
             `;
 
@@ -136,7 +139,7 @@ const listarRutinasByIdAtleta = (id_atleta) => {
             `;
 
             // Ejecutar la primera consulta para obtener las rutinas del atleta
-            connection.query(queryRutinas, [id_atleta], (error, resultadosRutinas) => {
+            connection.query(queryRutinas, [id_atleta, id_entrenador, id_entrenador, id_gimnasio, id_gimnasio], (error, resultadosRutinas) => {
                 if (error) {
                     connection.release(); // Liberar la conexión
                     return reject('Error al consultar las rutinas del atleta');
@@ -354,7 +357,7 @@ const buscarRutinasByFiltro = (filtros) => {
 };
 
 // 4. Crear una rutina y asignarla a un atleta  
-const crearRutinaYAsignarAtleta = (rutina, ejercicios) => { 
+const crearRutinaYAsignarAtleta = (rutina, ejercicios) => {
     return new Promise((resolve, reject) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
