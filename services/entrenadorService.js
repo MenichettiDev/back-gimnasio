@@ -9,7 +9,7 @@ const obtenerEntrenadores = () => {
             const queryPersonas = `
                 SELECT * 
                 FROM tb_entrenador 
-                JOIN tb_persona ON tb_persona.dni = tb_entrenador.dni
+                JOIN tb_persona ON tb_persona.id_persona = tb_entrenador.id_persona
             `;
 
             connection.query(queryPersonas, (error, resultados) => {

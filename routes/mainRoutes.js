@@ -145,4 +145,26 @@ router.put('/metas/:id', metasController.actualizarMeta);
 router.delete('/metas/:id', metasController.eliminarMeta);
 router.get('/metas/atleta/:id_atleta', metasController.listarMetasPorIdAtleta);
 
-module.exports = router; 
+
+//Relaciones
+
+// Solicitar relación atleta-entrenador
+router.post('/solicitar-atleta-entrenador', require('../controllers/relacionesController').solicitarAtletaEntrenador);
+// Solicitar relación atleta-gimnasio
+router.post('/solicitar-atleta-gimnasio', require('../controllers/relacionesController').solicitarAtletaGimnasio);
+// Solicitar relación entrenador-gimnasio
+router.post('/solicitar-entrenador-gimnasio', require('../controllers/relacionesController').solicitarEntrenadorGimnasio);
+// Obtener solicitudes pendientes para entrenador
+router.post('/solicitudes-pendientes-entrenador', require('../controllers/relacionesController').getSolicitudesPendientesEntrenador);
+// Obtener solicitudes pendientes para atleta
+router.post('/solicitudes-pendientes-atleta', require('../controllers/relacionesController').getSolicitudesPendientesAtleta);
+// Obtener solicitudes pendientes para gimnasio
+router.post('/solicitudes-pendientes-gimnasio', require('../controllers/relacionesController').getSolicitudesPendientesGimnasio);
+// Aceptar/rechazar solicitud atleta-entrenador
+router.post('/responder-atleta-entrenador', require('../controllers/relacionesController').responderSolicitudAtletaEntrenador);
+// Aceptar/rechazar solicitud atleta-gimnasio
+router.post('/responder-atleta-gimnasio', require('../controllers/relacionesController').responderSolicitudAtletaGimnasio);
+// Aceptar/rechazar solicitud entrenador-gimnasio
+router.post('/responder-entrenador-gimnasio', require('../controllers/relacionesController').responderSolicitudEntrenadorGimnasio);
+
+module.exports = router;
