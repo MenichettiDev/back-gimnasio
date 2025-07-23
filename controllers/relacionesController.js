@@ -98,3 +98,36 @@ exports.responderSolicitudEntrenadorGimnasio = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Obtener relaciones activas de un atleta (gimnasios y entrenadores)
+exports.getRelacionesActivasAtleta = async (req, res) => {
+    try {
+        const { id_atleta } = req.body;
+        const result = await require('../services/relacionesService').getRelacionesActivasAtleta(id_atleta);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Obtener relaciones activas de un entrenador (atletas y gimnasios)
+exports.getRelacionesActivasEntrenador = async (req, res) => {
+    try {
+        const { id_entrenador } = req.body;
+        const result = await require('../services/relacionesService').getRelacionesActivasEntrenador(id_entrenador);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Obtener relaciones activas de un gimnasio (atletas y entrenadores)
+exports.getRelacionesActivasGimnasio = async (req, res) => {
+    try {
+        const { id_gimnasio } = req.body;
+        const result = await require('../services/relacionesService').getRelacionesActivasGimnasio(id_gimnasio);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

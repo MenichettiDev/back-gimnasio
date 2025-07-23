@@ -167,4 +167,9 @@ router.post('/responder-atleta-gimnasio', require('../controllers/relacionesCont
 // Aceptar/rechazar solicitud entrenador-gimnasio
 router.post('/responder-entrenador-gimnasio', require('../controllers/relacionesController').responderSolicitudEntrenadorGimnasio);
 
+//Relaciones activas
+router.post('/relaciones-activas-atleta', require('../controllers/relacionesController').getRelacionesActivasAtleta);
+router.post('/relaciones-activas-entrenador', require('../controllers/relacionesController').getRelacionesActivasEntrenador);
+router.post('/relaciones-activas-gimnasio', require('../controllers/relacionesController').getRelacionesActivasGimnasio);
+
 module.exports = router;

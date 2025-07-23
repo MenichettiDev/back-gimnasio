@@ -5,11 +5,32 @@ exports.solicitarAtletaEntrenador = (id_atleta, id_entrenador) => {
     return new Promise((resolve, reject) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
-            const query = 'INSERT INTO tb_atleta_entrenador (id_atleta, id_entrenador, activo) VALUES (?, ?, 0)';
-            connection.query(query, [id_atleta, id_entrenador], (error, resultados) => {
-                connection.release();
-                if (error) return reject(error);
-                resolve({ success: true });
+            // Verificar si ya existe la solicitud
+            const checkQuery = 'SELECT activo FROM tb_atleta_entrenador WHERE id_atleta = ? AND id_entrenador = ? ORDER BY id DESC LIMIT 1';
+            connection.query(checkQuery, [id_atleta, id_entrenador], (error, rows) => {
+                if (error) {
+                    connection.release();
+                    return reject(error);
+                }
+                if (rows.length > 0) {
+                    const estado = rows[0].activo;
+                    if (estado === 0) {
+                        connection.release();
+                        return resolve({ success: false, message: 'Ya existe una solicitud pendiente.' });
+                    }
+                    if (estado === 1) {
+                        connection.release();
+                        return resolve({ success: false, message: 'La relación ya está activa.' });
+                    }
+                    // Si estado === -1, se puede crear nuevamente
+                }
+                // Insertar nueva solicitud
+                const query = 'INSERT INTO tb_atleta_entrenador (id_atleta, id_entrenador, activo) VALUES (?, ?, 0)';
+                connection.query(query, [id_atleta, id_entrenador], (error, resultados) => {
+                    connection.release();
+                    if (error) return reject(error);
+                    resolve({ success: true });
+                });
             });
         });
     });
@@ -20,11 +41,29 @@ exports.solicitarAtletaGimnasio = (id_atleta, id_gimnasio) => {
     return new Promise((resolve, reject) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
-            const query = 'INSERT INTO tb_atleta_gimnasio (id_atleta, id_gimnasio, activo) VALUES (?, ?, 0)';
-            connection.query(query, [id_atleta, id_gimnasio], (error, resultados) => {
-                connection.release();
-                if (error) return reject(error);
-                resolve({ success: true });
+            const checkQuery = 'SELECT activo FROM tb_atleta_gimnasio WHERE id_atleta = ? AND id_gimnasio = ? ORDER BY id DESC LIMIT 1';
+            connection.query(checkQuery, [id_atleta, id_gimnasio], (error, rows) => {
+                if (error) {
+                    connection.release();
+                    return reject(error);
+                }
+                if (rows.length > 0) {
+                    const estado = rows[0].activo;
+                    if (estado === 0) {
+                        connection.release();
+                        return resolve({ success: false, message: 'Ya existe una solicitud pendiente.' });
+                    }
+                    if (estado === 1) {
+                        connection.release();
+                        return resolve({ success: false, message: 'La relación ya está activa.' });
+                    }
+                }
+                const query = 'INSERT INTO tb_atleta_gimnasio (id_atleta, id_gimnasio, activo) VALUES (?, ?, 0)';
+                connection.query(query, [id_atleta, id_gimnasio], (error, resultados) => {
+                    connection.release();
+                    if (error) return reject(error);
+                    resolve({ success: true });
+                });
             });
         });
     });
@@ -35,11 +74,29 @@ exports.solicitarEntrenadorGimnasio = (id_entrenador, id_gimnasio) => {
     return new Promise((resolve, reject) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
-            const query = 'INSERT INTO tb_entrenador_gimnasio (id_entrenador, id_gimnasio, activo) VALUES (?, ?, 0)';
-            connection.query(query, [id_entrenador, id_gimnasio], (error, resultados) => {
-                connection.release();
-                if (error) return reject(error);
-                resolve({ success: true });
+            const checkQuery = 'SELECT activo FROM tb_entrenador_gimnasio WHERE id_entrenador = ? AND id_gimnasio = ? ORDER BY id DESC LIMIT 1';
+            connection.query(checkQuery, [id_entrenador, id_gimnasio], (error, rows) => {
+                if (error) {
+                    connection.release();
+                    return reject(error);
+                }
+                if (rows.length > 0) {
+                    const estado = rows[0].activo;
+                    if (estado === 0) {
+                        connection.release();
+                        return resolve({ success: false, message: 'Ya existe una solicitud pendiente.' });
+                    }
+                    if (estado === 1) {
+                        connection.release();
+                        return resolve({ success: false, message: 'La relación ya está activa.' });
+                    }
+                }
+                const query = 'INSERT INTO tb_entrenador_gimnasio (id_entrenador, id_gimnasio, activo) VALUES (?, ?, 0)';
+                connection.query(query, [id_entrenador, id_gimnasio], (error, resultados) => {
+                    connection.release();
+                    if (error) return reject(error);
+                    resolve({ success: true });
+                });
             });
         });
     });
@@ -157,6 +214,97 @@ exports.responderSolicitudEntrenadorGimnasio = (id, activo) => {
                 connection.release();
                 if (error) return reject(error);
                 resolve({ success: true });
+            });
+        });
+    });
+};
+
+// Obtener relaciones activas de un atleta (gimnasios y entrenadores)
+exports.getRelacionesActivasAtleta = (id_atleta) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+            const queryEntrenadores = `
+                SELECT ae.id, e.id_entrenador, p.nombre, p.apellido
+                FROM tb_atleta_entrenador ae
+                JOIN tb_entrenador e ON ae.id_entrenador = e.id_entrenador
+                JOIN tb_persona p ON e.id_persona = p.id_persona
+                WHERE ae.id_atleta = ? AND ae.activo = 1
+            `;
+            connection.query(queryEntrenadores, [id_atleta], (error, entrenadores) => {
+                if (error) return connection.release(), reject(error);
+                const queryGimnasios = `
+                    SELECT ag.id, g.id_gimnasio, g.nombre
+                    FROM tb_atleta_gimnasio ag
+                    JOIN tb_gimnasio g ON ag.id_gimnasio = g.id_gimnasio
+                    WHERE ag.id_atleta = ? AND ag.activo = 1
+                `;
+                connection.query(queryGimnasios, [id_atleta], (error, gimnasios) => {
+                    connection.release();
+                    if (error) return reject(error);
+                    resolve({ entrenadores, gimnasios });
+                });
+            });
+        });
+    });
+};
+
+// Obtener relaciones activas de un entrenador (atletas y gimnasios)
+exports.getRelacionesActivasEntrenador = (id_entrenador) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+            const queryAtletas = `
+                SELECT ae.id, a.id_atleta, p.nombre, p.apellido
+                FROM tb_atleta_entrenador ae
+                JOIN tb_atleta a ON ae.id_atleta = a.id_atleta
+                JOIN tb_persona p ON a.id_persona = p.id_persona
+                WHERE ae.id_entrenador = ? AND ae.activo = 1
+            `;
+            connection.query(queryAtletas, [id_entrenador], (error, atletas) => {
+                if (error) return connection.release(), reject(error);
+                const queryGimnasios = `
+                    SELECT eg.id, g.id_gimnasio, g.nombre
+                    FROM tb_entrenador_gimnasio eg
+                    JOIN tb_gimnasio g ON eg.id_gimnasio = g.id_gimnasio
+                    WHERE eg.id_entrenador = ? AND eg.activo = 1
+                `;
+                connection.query(queryGimnasios, [id_entrenador], (error, gimnasios) => {
+                    connection.release();
+                    if (error) return reject(error);
+                    resolve({ atletas, gimnasios });
+                });
+            });
+        });
+    });
+};
+
+// Obtener relaciones activas de un gimnasio (atletas y entrenadores)
+exports.getRelacionesActivasGimnasio = (id_gimnasio) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+            const queryAtletas = `
+                SELECT ag.id, a.id_atleta, p.nombre, p.apellido
+                FROM tb_atleta_gimnasio ag
+                JOIN tb_atleta a ON ag.id_atleta = a.id_atleta
+                JOIN tb_persona p ON a.id_persona = p.id_persona
+                WHERE ag.id_gimnasio = ? AND ag.activo = 1
+            `;
+            connection.query(queryAtletas, [id_gimnasio], (error, atletas) => {
+                if (error) return connection.release(), reject(error);
+                const queryEntrenadores = `
+                    SELECT eg.id, e.id_entrenador, p.nombre, p.apellido
+                    FROM tb_entrenador_gimnasio eg
+                    JOIN tb_entrenador e ON eg.id_entrenador = e.id_entrenador
+                    JOIN tb_persona p ON e.id_persona = p.id_persona
+                    WHERE eg.id_gimnasio = ? AND eg.activo = 1
+                `;
+                connection.query(queryEntrenadores, [id_gimnasio], (error, entrenadores) => {
+                    connection.release();
+                    if (error) return reject(error);
+                    resolve({ atletas, entrenadores });
+                });
             });
         });
     });
