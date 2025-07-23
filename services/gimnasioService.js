@@ -111,7 +111,7 @@ const crearGimnasio = (gimnasioData) => {
                             id_persona, nombre, direccion, telefono,
                             horario_apertura, horario_cierre, estado, descripcion,
                             ultimo_pago, pagina_web, foto
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     `;
                     const gimnasioValues = [
                         idPersona,
