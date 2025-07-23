@@ -108,7 +108,7 @@ const crearGimnasio = (gimnasioData) => {
                     // Paso 2: Insertar en tb_gimnasio
                     const queryInsertGimnasio = `
                         INSERT INTO tb_gimnasio (
-                            id_persona, nombre, direccion, telefono, correo_electronico,
+                            id_persona, nombre, direccion, telefono,
                             horario_apertura, horario_cierre, estado, descripcion,
                             ultimo_pago, pagina_web, foto
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -118,7 +118,6 @@ const crearGimnasio = (gimnasioData) => {
                         gimnasioData.nombre_gimnasio,
                         gimnasioData.direccion_gimnasio,
                         gimnasioData.telefono || null,
-                        gimnasioData.correo_electronico || null,
                         gimnasioData.horario_apertura || null,
                         gimnasioData.horario_cierre || null,
                         'activo',
