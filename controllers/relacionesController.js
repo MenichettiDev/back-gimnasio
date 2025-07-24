@@ -131,3 +131,36 @@ exports.getRelacionesActivasGimnasio = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Eliminar relación atleta-gimnasio
+exports.eliminarRelacionAtletaGimnasio = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const result = await require('../services/relacionesService').eliminarRelacionAtletaGimnasio(id);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Eliminar relación atleta-entrenador
+exports.eliminarRelacionAtletaEntrenador = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const result = await require('../services/relacionesService').eliminarRelacionAtletaEntrenador(id);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Eliminar relación entrenador-gimnasio
+exports.eliminarRelacionEntrenadorGimnasio = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const result = await require('../services/relacionesService').eliminarRelacionEntrenadorGimnasio(id);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

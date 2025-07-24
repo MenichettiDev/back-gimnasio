@@ -309,3 +309,48 @@ exports.getRelacionesActivasGimnasio = (id_gimnasio) => {
         });
     });
 };
+
+// Eliminar relación atleta-gimnasio
+exports.eliminarRelacionAtletaGimnasio = (id) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+            const query = 'DELETE FROM tb_atleta_gimnasio WHERE id = ?';
+            connection.query(query, [id], (error, resultados) => {
+                connection.release();
+                if (error) return reject(error);
+                resolve({ success: true });
+            });
+        });
+    });
+};
+
+// Eliminar relación atleta-entrenador
+exports.eliminarRelacionAtletaEntrenador = (id) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+            const query = 'DELETE FROM tb_atleta_entrenador WHERE id = ?';
+            connection.query(query, [id], (error, resultados) => {
+                connection.release();
+                if (error) return reject(error);
+                resolve({ success: true });
+            });
+        });
+    });
+};
+
+// Eliminar relación entrenador-gimnasio
+exports.eliminarRelacionEntrenadorGimnasio = (id) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+            const query = 'DELETE FROM tb_entrenador_gimnasio WHERE id = ?';
+            connection.query(query, [id], (error, resultados) => {
+                connection.release();
+                if (error) return reject(error);
+                resolve({ success: true });
+            });
+        });
+    });
+};

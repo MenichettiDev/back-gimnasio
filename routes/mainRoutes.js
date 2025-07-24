@@ -172,4 +172,9 @@ router.post('/relaciones-activas-atleta', require('../controllers/relacionesCont
 router.post('/relaciones-activas-entrenador', require('../controllers/relacionesController').getRelacionesActivasEntrenador);
 router.post('/relaciones-activas-gimnasio', require('../controllers/relacionesController').getRelacionesActivasGimnasio);
 
+// Eliminar relaciones
+router.post('/eliminar-atleta-gimnasio', require('../controllers/relacionesController').eliminarRelacionAtletaGimnasio);
+router.post('/eliminar-atleta-entrenador', require('../controllers/relacionesController').eliminarRelacionAtletaEntrenador);
+router.post('/eliminar-entrenador-gimnasio', require('../controllers/relacionesController').eliminarRelacionEntrenadorGimnasio);
+
 module.exports = router;
