@@ -671,7 +671,108 @@ const eliminarRutinaConRelaciones = (id_rutina) => {
     });
 };
 
+// 7. Listar rutinas por ID de creador
+const listarRutinaByIdCreador = (id_creador) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
 
+            // Consulta para obtener las rutinas creadas por el id_creador
+            const queryRutinas = `
+                SELECT 
+                    r.id_rutina,
+                    r.id_creador,
+                    r.nombre,
+                    r.cantidad_dias,
+                    r.nivel_atleta,
+                    r.objetivo,
+                    r.descripcion,
+                    ra.id_atleta,
+                    ra.fecha_asignacion
+                FROM tb_rutina r
+                LEFT JOIN tb_rutina_atleta ra ON r.id_rutina = ra.id_rutina
+                WHERE r.id_creador = ?
+                ORDER BY r.id_rutina DESC;
+            `;
+
+            // Consulta para obtener los ejercicios de una rutina por día
+            const queryEjercicios = `
+                SELECT 
+                    dia,
+                    id_grupo_muscular,
+                    id_ejercicios AS id_ejercicio,
+                    id_repeticion
+                FROM tb_rutina_ejercicios
+                WHERE id_rutina = ?
+                ORDER BY dia ASC;
+            `;
+
+            connection.query(queryRutinas, [id_creador], (error, resultadosRutinas) => {
+                if (error) {
+                    connection.release();
+                    return reject('Error al consultar las rutinas del creador');
+                }
+
+                if (resultadosRutinas.length === 0) {
+                    connection.release();
+                    return resolve([]);
+                }
+
+                const rutinasCompletas = [];
+                const procesarRutina = (index) => {
+                    if (index >= resultadosRutinas.length) {
+                        connection.release();
+                        return resolve(rutinasCompletas);
+                    }
+
+                    const rutina = resultadosRutinas[index];
+
+                    connection.query(queryEjercicios, [rutina.id_rutina], (error, resultadosEjercicios) => {
+                        if (error) {
+                            connection.release();
+                            return reject('Error al consultar los ejercicios de la rutina');
+                        }
+
+                        const ejerciciosPorDia = resultadosEjercicios.reduce((acc, ejercicio) => {
+                            if (!acc[ejercicio.dia]) acc[ejercicio.dia] = [];
+                            acc[ejercicio.dia].push({
+                                id_grupo_muscular: ejercicio.id_grupo_muscular,
+                                id_ejercicio: ejercicio.id_ejercicio,
+                                id_repeticion: ejercicio.id_repeticion,
+                            });
+                            return acc;
+                        }, {});
+
+                        const dias = Object.keys(ejerciciosPorDia).map(dia => ({
+                            dia: parseInt(dia),
+                            ejercicios: ejerciciosPorDia[dia],
+                        }));
+
+                        const rutinaCompleta = {
+                            rutina: {
+                                id_rutina: rutina.id_rutina,
+                                id_creador: rutina.id_creador,
+                                nombre: rutina.nombre,
+                                cantidad_dias: rutina.cantidad_dias,
+                                nivel_atleta: rutina.nivel_atleta,
+                                objetivo: rutina.objetivo,
+                                descripcion: rutina.descripcion,
+                                id_atleta: rutina.id_atleta,
+                                fecha_asignacion: rutina.fecha_asignacion,
+                            },
+                            ejercicios: dias,
+                        };
+
+                        rutinasCompletas.push(rutinaCompleta);
+                        procesarRutina(index + 1);
+                    });
+                };
+
+                procesarRutina(0);
+            });
+        });
+    });
+};
 
 module.exports = {
     listarRutinasByIdAtleta,
@@ -679,6 +780,6 @@ module.exports = {
     editarRutinaYAsignarAtleta,
     eliminarRutinaConRelaciones,
     listarRutinaByIdRutina,
-    buscarRutinasByFiltro
-
+    buscarRutinasByFiltro,
+    listarRutinaByIdCreador
 };

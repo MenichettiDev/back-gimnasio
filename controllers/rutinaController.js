@@ -89,21 +89,16 @@ exports.obtenerRutinaByIdCreador = async (req, res) => {
     const { id_persona } = req.body;
 
     if (!id_persona) {
-
         return res.status(400).json({ message: 'El id_persona es obligatorio' });
     }
 
     try {
-
+        // Llama al nuevo servicio que devuelve rutinas completas por id_creador
         const resultados = await listarRutinaByIdCreador(id_persona);
 
         if (resultados && resultados.length > 0) {
-
-            return res.json({
-                rutinas: resultados
-            });
+            return res.json(resultados);
         } else {
-
             return res.status(404).json({ message: 'No se encontraron rutinas para esta persona' });
         }
     } catch (error) {
@@ -227,45 +222,3 @@ exports.eliminarRutina = async (req, res) => {
 
 
 
-// {
-//     rutina: {
-//         id_creador: 1,
-//         nombre: "Fuerza y Resistencia",
-//         cantidad_dias: 4,
-//         nivel_atleta: "Intermedio",
-//         objetivo: "Ganar masa muscular",
-//         descripcion: "Rutina enfocada en hipertrofia con ejercicios compuestos y aislados.",
-//         id_atleta: 10,
-//         fecha_asignacion: "2025-02-16"
-//     },
-//     ejercicios: [
-//         {
-//             dia: 1,
-//             ejercicios: [
-//                 { id_grupo_muscular: 1, id_ejercicio: 101, id_repeticion: 3 },
-//                 { id_grupo_muscular: 2, id_ejercicio: 102, id_repeticion: 4 }
-//             ]
-//         },
-//         {
-//             dia: 2,
-//             ejercicios: [
-//                 { id_grupo_muscular: 3, id_ejercicio: 201, id_repeticion: 3 },
-//                 { id_grupo_muscular: 4, id_ejercicio: 202, id_repeticion: 4 }
-//             ]
-//         },
-//         {
-//             dia: 3,
-//             ejercicios: [
-//                 { id_grupo_muscular: 1, id_ejercicio: 103, id_repeticion: 3 },
-//                 { id_grupo_muscular: 2, id_ejercicio: 104, id_repeticion: 4 }
-//             ]
-//         },
-//         {
-//             dia: 4,
-//             ejercicios: [
-//                 { id_grupo_muscular: 3, id_ejercicio: 203, id_repeticion: 3 },
-//                 { id_grupo_muscular: 4, id_ejercicio: 204, id_repeticion: 4 }
-//             ]
-//         }
-//     ]
-// }
