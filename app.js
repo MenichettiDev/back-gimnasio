@@ -7,6 +7,9 @@ const mainRoutes = require('./routes/mainRoutes'); //Importamos las rutas princi
 const authRoutes = require('./routes/authRoutes'); //Importamos las rutas de autenticación.
 const bodyParser = require('body-parser'); //Middleware para analizar el cuerpo de las solicitudes HTTP.
 const cors = require('cors');
+const suscripcionRoutes = require('./routes/suscripcionRoutes');
+
+
 
 app.set('trust proxy', true); // ¡Confía en el proxy (OpenLiteSpeed)!
 
@@ -27,7 +30,7 @@ app.use(session({
   secret: 'claveSecreta', // Usa una clave segura (mejor en .env)
   resave: false,
   saveUninitialized: true,
-  cookie: { 
+  cookie: {
     secure: process.env.NODE_ENV === 'production', // false en desarrollo
     sameSite: 'none', // Necesario para cross-site cookies
     httpOnly: true
@@ -70,8 +73,9 @@ app.use((req, res, next) => {
 // Middleware para manejar solicitudes OPTIONS
 app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIONS
 
+app.use('/api/', suscripcionRoutes);
 app.use('/api/', mainRoutes);
-app.use('/api/', authRoutes); 
+app.use('/api/', authRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);

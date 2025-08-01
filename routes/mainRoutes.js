@@ -177,4 +177,7 @@ router.post('/eliminar-atleta-gimnasio', require('../controllers/relacionesContr
 router.post('/eliminar-atleta-entrenador', require('../controllers/relacionesController').eliminarRelacionAtletaEntrenador);
 router.post('/eliminar-entrenador-gimnasio', require('../controllers/relacionesController').eliminarRelacionEntrenadorGimnasio);
 
+
+
+
 module.exports = router;
