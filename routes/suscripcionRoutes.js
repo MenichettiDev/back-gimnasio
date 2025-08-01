@@ -1,8 +1,9 @@
 const express = require('express');
-const { crearSuscripcionController } = require('../controllers/suscripcionController');
 const router = express.Router();
+const suscripcionController = require('../controllers/suscripcionController'); //Importamos el controlador para manejar la autenticación
 
 // router.post('/', crearSuscripcionController);
-router.post('/crearSuscripcion', require('../controllers/suscripcionController').crearSuscripcionController);
+router.post('/crearSuscripcion', suscripcionController.crearSuscripcionController);
 
 module.exports = router;
+
