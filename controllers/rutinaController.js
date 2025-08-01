@@ -146,7 +146,7 @@ exports.obtenerRutinasFree = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -170,7 +170,7 @@ exports.crearRutinaYAsignarAtleta = async (req, res) => {
     } catch (error) {
         // Si hay un error, mostrar el mensaje de error
         console.error('Error al crear la rutina:', error);
-        return res.status(500).json({ message: 'Error al crear la rutina y asignar al atleta' });
+        return res.status(500).json({ message: 'Error al crear la rutina y asignar al atleta', error: error.message });
     }
 };
 
@@ -198,7 +198,7 @@ exports.editarRutinaYAsignarAtleta = async (req, res) => {
     } catch (error) {
         // Si hay un error, mostrar el mensaje de error
         console.error('Error al editar la rutina:', error);
-        return res.status(500).json({ message: 'Error al editar la rutina y asignar al atleta' });
+        return res.status(500).json({ message: 'Error al editar la rutina y asignar al atleta', error: error.message });
     }
 };
 
@@ -216,7 +216,7 @@ exports.eliminarRutina = async (req, res) => {
         return res.status(200).json({ message: resultado });
     } catch (error) {
         console.error('Error al eliminar la rutina:', error);
-        return res.status(500).json({ message: 'Error al eliminar la rutina y sus relaciones' });
+        return res.status(500).json({ message: 'Error al eliminar la rutina y sus relaciones', error: error.message });
     }
 };
 

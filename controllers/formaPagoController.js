@@ -19,7 +19,7 @@ exports.obtenerFormasPago = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -36,7 +36,7 @@ exports.obtenerFormaPagoById = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -53,7 +53,7 @@ exports.crearFormaPago = async (req, res) => {
         return res.status(201).json({ id_forma_pago: idFormaPago, message: 'Forma de pago creada exitosamente' });
     } catch (error) {
         console.error('Error en la creación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -76,7 +76,7 @@ exports.actualizarFormaPago = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la actualización:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -94,6 +94,6 @@ exports.eliminarFormaPago = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la eliminación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };

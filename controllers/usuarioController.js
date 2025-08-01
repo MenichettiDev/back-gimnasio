@@ -6,7 +6,7 @@ exports.obtenerPersonas = async (req, res) => {
     try {
         const resultados = await listarPersonas();
         if (resultados && resultados.length > 0) {
-            return res.json(  resultados );
+            return res.json(resultados);
         } else {
             return res.status(404).json({ message: 'No se encontraron personas' });
         }
@@ -25,7 +25,7 @@ exports.obtenerPersonaPorId = async (req, res) => {
         }
 
         const resultado = await obtenerPersonaPorId(parseInt(id_persona));
-        return res.json( resultado );
+        return res.json(resultado);
     } catch (error) {
         console.error('Error al obtener la persona:', error);
         return res.status(500).json({ message: 'Error en la base de datos', error: error.message });

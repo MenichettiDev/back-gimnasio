@@ -22,7 +22,7 @@ exports.obtenerEntrenadorByIdPersona = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -40,7 +40,7 @@ exports.obtenerEntrenadores = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -71,7 +71,7 @@ exports.crearEntrenador = async (req, res) => {
         return res.status(201).json(resultado);
     } catch (error) {
         console.error('Error al crear el entrenador:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -89,6 +89,6 @@ exports.asignarGimnasios = async (req, res) => {
         return res.status(200).json(resultado);
     } catch (error) {
         console.error('Error al asignar gimnasios:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };

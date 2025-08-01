@@ -19,7 +19,7 @@ exports.obtenerGruposMusculares = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -36,7 +36,7 @@ exports.obtenerGrupoMuscular = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -53,7 +53,7 @@ exports.crearGrupoMuscular = async (req, res) => {
         return res.status(201).json({ id_grupo_muscular: nuevoId, message: 'Grupo muscular creado exitosamente' });
     } catch (error) {
         console.error('Error en la creación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -76,7 +76,7 @@ exports.actualizarGrupoMuscular = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la actualización:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -93,6 +93,6 @@ exports.eliminarGrupoMuscular = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la eliminación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };

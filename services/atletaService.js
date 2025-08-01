@@ -243,7 +243,7 @@ const crearAtleta = (atletaData) => {
                     atletaData.celular || null, // Si no se proporciona celular, se inserta NULL
                     atletaData.direccion || null, // Si no se proporciona dirección, se inserta NULL
                     atletaData.email,
-                    '$2b$10$5t2sv9aI6C9cbDtFlWp1iekWGMk.Addu7ha6dWzK50CC2Uc.1/Rzi', // Por defecto 123
+                    atletaData.password,
                     null // Si no se proporciona foto_archivo, se inserta NULL por defecto en la imagen
                 ];
 

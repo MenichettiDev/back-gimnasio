@@ -16,7 +16,7 @@ exports.obtenerGimnasios = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos', error });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -96,6 +96,6 @@ exports.crearGimnasio = async (req, res) => {
         return res.status(201).json(resultado);
     } catch (error) {
         console.error('Error al crear el gimnasio:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };

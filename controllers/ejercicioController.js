@@ -1,4 +1,3 @@
-
 // Importar el servicio necesario para la consulta
 const { listarEjercicioPorGrupoMuscular, actualizarEjercicio, eliminarEjercicioPorId, listarEjercicioById, crearEjercicio } = require('../services/ejercicioService');
 
@@ -18,7 +17,7 @@ exports.getEjercicioById = async (req, res) => {
         if (resultados && resultados.length > 0) {
             // Si se encuentra el ejercicio, devolver los datos
             return res.json(
-                 resultados[0] // Retornar el primer resultado porque es un solo ejercicio
+                resultados[0] // Retornar el primer resultado porque es un solo ejercicio
             );
         } else {
             // Si no se encuentra el ejercicio, devolver un mensaje adecuado
@@ -46,7 +45,7 @@ exports.getEjercicioPorGrupoMuscular = async (req, res) => {
 
         if (resultados && resultados.length > 0) {
             // Si se encuentran atletas, devolver los datos
-            return res.json( resultados  );
+            return res.json(resultados);
         } else {
             // Si no se encuentran atletas, devolver un mensaje adecuado
             return res.status(404).json({ message: 'No se encontraron ejercicios para este grupo muscular' });
@@ -88,7 +87,7 @@ exports.updateEjercicio = async (req, res) => {
 
     try {
         // Crear objeto del ejercicio con los datos proporcionados
-        const ejercicio = { id_ejercicio,id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video };
+        const ejercicio = { id_ejercicio, id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video };
 
         // Llamar al servicio para actualizar el ejercicio
         const resultados = await actualizarEjercicio(ejercicio);

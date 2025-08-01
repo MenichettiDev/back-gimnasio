@@ -20,7 +20,7 @@ exports.obtenerMetas = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -37,7 +37,7 @@ exports.obtenerMetaPorId = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -54,7 +54,7 @@ exports.crearMeta = async (req, res) => {
         return res.status(201).json({ idMeta: nuevoId, message: 'Meta creada exitosamente' });
     } catch (error) {
         console.error('Error en la creación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -77,7 +77,7 @@ exports.actualizarMeta = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la actualización:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -94,7 +94,7 @@ exports.eliminarMeta = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la eliminación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -111,6 +111,6 @@ exports.listarMetasPorIdAtleta = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };

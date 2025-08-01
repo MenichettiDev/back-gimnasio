@@ -15,7 +15,7 @@ async function crearSuscripcionController(req, res) {
         res.status(201).json(suscripcion);
     } catch (error) {
         console.error('Error en crearSuscripcionController:', error); // <-- Agrega este log
-        res.status(500).json({ error: error.message, details: error });
+        res.status(500).json({ error: error.message, details: error, error: error.message });
     }
 }
 

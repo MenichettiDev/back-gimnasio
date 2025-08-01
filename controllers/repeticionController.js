@@ -19,7 +19,7 @@ exports.obtenerRepeticiones = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -36,7 +36,7 @@ exports.obtenerRepeticionPorId = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -53,7 +53,7 @@ exports.crearRepeticion = async (req, res) => {
         return res.status(201).json({ idRepeticion: nuevoId, message: 'Repetición creada exitosamente' });
     } catch (error) {
         console.error('Error en la creación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -76,7 +76,7 @@ exports.actualizarRepeticion = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la actualización:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -93,6 +93,6 @@ exports.eliminarRepeticion = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la eliminación:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };

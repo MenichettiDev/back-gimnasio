@@ -97,7 +97,7 @@ exports.obtenerAtletas = async (req, res) => {
         }
     } catch (error) {
         console.error('Error en la consulta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -119,7 +119,7 @@ exports.crearAtleta = async (req, res) => {
         return res.status(201).json(resultado);
     } catch (error) {
         console.error('Error al crear el atleta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
 
@@ -143,6 +143,6 @@ exports.editarAtleta = async (req, res) => {
         return res.status(200).json(resultado);
     } catch (error) {
         console.error('Error al editar el atleta:', error);
-        return res.status(500).json({ message: 'Error en la base de datos' });
+        return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
