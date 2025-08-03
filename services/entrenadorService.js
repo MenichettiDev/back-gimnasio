@@ -1,4 +1,5 @@
 const conexion = require('../config/conexion');
+const bcrypt = require('bcrypt');
 //pool aplicado
 // 1. Obtener todos los entrenadores
 const obtenerEntrenadores = () => {
@@ -42,56 +43,41 @@ const crearEntrenador = (entrenadorData) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
 
-            connection.beginTransaction((error) => {
-                if (error) {
+            // Hashear la contraseña antes de guardar
+            bcrypt.hash(entrenadorData.password || '123', 10, (hashErr, hashedPassword) => {
+                if (hashErr) {
                     connection.release();
-                    return reject(error);
+                    return reject(hashErr);
                 }
 
-                // Paso 1: Insertar en tb_persona
-                const queryInsertPersona = `
-                    INSERT INTO tb_persona (
-                        dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
-                        celular, direccion, email, password, foto_archivo
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                `;
-                const personaValues = [
-                    entrenadorData.dni,
-                    2,
-                    entrenadorData.nombre,
-                    entrenadorData.apellido,
-                    entrenadorData.apodo || null,
-                    entrenadorData.fecha_nacimiento,
-                    entrenadorData.celular || null,
-                    entrenadorData.direccion || null,
-                    entrenadorData.email,
-                    '$2b$10$5t2sv9aI6C9cbDtFlWp1iekWGMk.Addu7ha6dWzK50CC2Uc.1/Rzi',
-                    null
-                ];
-
-                connection.query(queryInsertPersona, personaValues, (error, result) => {
+                connection.beginTransaction((error) => {
                     if (error) {
-                        return connection.rollback(() => {
-                            connection.release();
-                            reject(error);
-                        });
+                        connection.release();
+                        return reject(error);
                     }
 
-                    const idPersona = result.insertId;
-
-                    // Paso 2: Insertar en tb_entrenador
-                    const queryInsertEntrenador = `
-                        INSERT INTO tb_entrenador (
-                            id_persona, fecha_ingreso, estado
-                        ) VALUES (?, ?, ?)
+                    // Paso 1: Insertar en tb_persona
+                    const queryInsertPersona = `
+                        INSERT INTO tb_persona (
+                            dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
+                            celular, direccion, email, password, foto_archivo
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     `;
-                    const entrenadorValues = [
-                        idPersona,
-                        entrenadorData.fecha_ingreso || new Date().toISOString().split('T')[0],
-                        'activo'
+                    const personaValues = [
+                        entrenadorData.dni,
+                        2,
+                        entrenadorData.nombre,
+                        entrenadorData.apellido,
+                        entrenadorData.apodo || null,
+                        entrenadorData.fecha_nacimiento,
+                        entrenadorData.celular || null,
+                        entrenadorData.direccion || null,
+                        entrenadorData.email,
+                        hashedPassword, // Usar la contraseña hasheada
+                        null
                     ];
 
-                    connection.query(queryInsertEntrenador, entrenadorValues, (error, resultEntrenador) => {
+                    connection.query(queryInsertPersona, personaValues, (error, result) => {
                         if (error) {
                             return connection.rollback(() => {
                                 connection.release();
@@ -99,24 +85,63 @@ const crearEntrenador = (entrenadorData) => {
                             });
                         }
 
-                        const idEntrenador = resultEntrenador.insertId;
+                        const idPersona = result.insertId;
 
-                        // Paso 3: Insertar en tb_entrenador_gimnasio si hay gimnasios
-                        if (entrenadorData.gimnasios && entrenadorData.gimnasios.length > 0) {
-                            const queryInsertAsignaciones = `
+                        // Paso 2: Insertar en tb_entrenador
+                        const queryInsertEntrenador = `
+                            INSERT INTO tb_entrenador (
+                                id_persona, fecha_ingreso, estado
+                            ) VALUES (?, ?, ?)
+                        `;
+                        const entrenadorValues = [
+                            idPersona,
+                            entrenadorData.fecha_ingreso || new Date().toISOString().split('T')[0],
+                            'activo'
+                        ];
+
+                        connection.query(queryInsertEntrenador, entrenadorValues, (error, resultEntrenador) => {
+                            if (error) {
+                                return connection.rollback(() => {
+                                    connection.release();
+                                    reject(error);
+                                });
+                            }
+
+                            const idEntrenador = resultEntrenador.insertId;
+
+                            // Paso 3: Insertar en tb_entrenador_gimnasio si hay gimnasios
+                            if (entrenadorData.gimnasios && entrenadorData.gimnasios.length > 0) {
+                                const queryInsertAsignaciones = `
                                 INSERT INTO tb_entrenador_gimnasio (id_entrenador, id_gimnasio) VALUES ?
                             `;
-                            const values = entrenadorData.gimnasios.map(id_gimnasio => [idEntrenador, id_gimnasio]);
+                                const values = entrenadorData.gimnasios.map(id_gimnasio => [idEntrenador, id_gimnasio]);
 
-                            connection.query(queryInsertAsignaciones, [values], (error) => {
-                                if (error) {
-                                    return connection.rollback(() => {
+                                connection.query(queryInsertAsignaciones, [values], (error) => {
+                                    if (error) {
+                                        return connection.rollback(() => {
+                                            connection.release();
+                                            reject(error);
+                                        });
+                                    }
+
+                                    // Commit final
+                                    connection.commit((commitError) => {
+                                        if (commitError) {
+                                            return connection.rollback(() => {
+                                                connection.release();
+                                                reject(commitError);
+                                            });
+                                        }
                                         connection.release();
-                                        reject(error);
+                                        resolve({
+                                            mensaje: "Entrenador creado exitosamente",
+                                            id_persona: idPersona,
+                                            id_entrenador: idEntrenador
+                                        });
                                     });
-                                }
-
-                                // Commit final
+                                });
+                            } else {
+                                // Si no hay gimnasios, solo commit
                                 connection.commit((commitError) => {
                                     if (commitError) {
                                         return connection.rollback(() => {
@@ -131,24 +156,8 @@ const crearEntrenador = (entrenadorData) => {
                                         id_entrenador: idEntrenador
                                     });
                                 });
-                            });
-                        } else {
-                            // Si no hay gimnasios, solo commit
-                            connection.commit((commitError) => {
-                                if (commitError) {
-                                    return connection.rollback(() => {
-                                        connection.release();
-                                        reject(commitError);
-                                    });
-                                }
-                                connection.release();
-                                resolve({
-                                    mensaje: "Entrenador creado exitosamente",
-                                    id_persona: idPersona,
-                                    id_entrenador: idEntrenador
-                                });
-                            });
-                        }
+                            }
+                        });
                     });
                 });
             });

@@ -1,4 +1,5 @@
 const conexion = require('../config/conexion');
+const bcrypt = require('bcrypt');
 //Pool aplicado
 // 1. Listar todos los gimnasios
 
@@ -68,66 +69,41 @@ const crearGimnasio = (gimnasioData) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
 
-            connection.beginTransaction((error) => {
-                if (error) {
+            // Hashear la contraseña antes de guardar
+            bcrypt.hash(gimnasioData.password || '123', 10, (hashErr, hashedPassword) => {
+                if (hashErr) {
                     connection.release();
-                    return reject(error);
+                    return reject(hashErr);
                 }
 
-                // Paso 1: Insertar en tb_persona
-                const queryInsertPersona = `
-                    INSERT INTO tb_persona (
-                        dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
-                        celular, direccion, email, password, foto_archivo
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                `;
-                const personaValues = [
-                    gimnasioData.dni,
-                    4, // id_acceso para gimnasio (ajustar según tu tabla tb_acceso)
-                    gimnasioData.nombre,
-                    gimnasioData.apellido,
-                    gimnasioData.apodo || null,
-                    gimnasioData.fecha_nacimiento,
-                    gimnasioData.celular || null,
-                    gimnasioData.direccion || null,
-                    gimnasioData.email,
-                    '$2b$10$5t2sv9aI6C9cbDtFlWp1iekWGMk.Addu7ha6dWzK50CC2Uc.1/Rzi', // Password por defecto 123
-                    null
-                ];
-
-                connection.query(queryInsertPersona, personaValues, (error, result) => {
+                connection.beginTransaction((error) => {
                     if (error) {
-                        return connection.rollback(() => {
-                            connection.release();
-                            reject(error);
-                        });
+                        connection.release();
+                        return reject(error);
                     }
 
-                    const idPersona = result.insertId;
-
-                    // Paso 2: Insertar en tb_gimnasio
-                    const queryInsertGimnasio = `
-                        INSERT INTO tb_gimnasio (
-                            id_persona, nombre, direccion, telefono,
-                            horario_apertura, horario_cierre, estado, descripcion,
-                            ultimo_pago, pagina_web, foto
+                    // Paso 1: Insertar en tb_persona
+                    const queryInsertPersona = `
+                        INSERT INTO tb_persona (
+                            dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
+                            celular, direccion, email, password, foto_archivo
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     `;
-                    const gimnasioValues = [
-                        idPersona,
-                        gimnasioData.nombre_gimnasio,
-                        gimnasioData.direccion_gimnasio,
-                        gimnasioData.telefono || null,
-                        gimnasioData.horario_apertura || null,
-                        gimnasioData.horario_cierre || null,
-                        'activo',
-                        gimnasioData.descripcion || null,
-                        gimnasioData.ultimo_pago || null,
-                        gimnasioData.pagina_web || null,
+                    const personaValues = [
+                        gimnasioData.dni,
+                        4, // id_acceso para gimnasio (ajustar según tu tabla tb_acceso)
+                        gimnasioData.nombre,
+                        gimnasioData.apellido,
+                        gimnasioData.apodo || null,
+                        gimnasioData.fecha_nacimiento,
+                        gimnasioData.celular || null,
+                        gimnasioData.direccion || null,
+                        gimnasioData.email,
+                        hashedPassword, // Usar la contraseña hasheada
                         null
                     ];
 
-                    connection.query(queryInsertGimnasio, gimnasioValues, (error, resultGimnasio) => {
+                    connection.query(queryInsertPersona, personaValues, (error, result) => {
                         if (error) {
                             return connection.rollback(() => {
                                 connection.release();
@@ -135,19 +111,52 @@ const crearGimnasio = (gimnasioData) => {
                             });
                         }
 
-                        // Commit final
-                        connection.commit((commitError) => {
-                            if (commitError) {
+                        const idPersona = result.insertId;
+
+                        // Paso 2: Insertar en tb_gimnasio
+                        const queryInsertGimnasio = `
+                            INSERT INTO tb_gimnasio (
+                                id_persona, nombre, direccion, telefono,
+                                horario_apertura, horario_cierre, estado, descripcion,
+                                ultimo_pago, pagina_web, foto
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        `;
+                        const gimnasioValues = [
+                            idPersona,
+                            gimnasioData.nombre_gimnasio,
+                            gimnasioData.direccion_gimnasio,
+                            gimnasioData.telefono || null,
+                            gimnasioData.horario_apertura || null,
+                            gimnasioData.horario_cierre || null,
+                            'activo',
+                            gimnasioData.descripcion || null,
+                            gimnasioData.ultimo_pago || null,
+                            gimnasioData.pagina_web || null,
+                            null
+                        ];
+
+                        connection.query(queryInsertGimnasio, gimnasioValues, (error, resultGimnasio) => {
+                            if (error) {
                                 return connection.rollback(() => {
                                     connection.release();
-                                    reject(commitError);
+                                    reject(error);
                                 });
                             }
-                            connection.release();
-                            resolve({
-                                mensaje: "Gimnasio creado exitosamente",
-                                id_persona: idPersona,
-                                id_gimnasio: resultGimnasio.insertId
+
+                            // Commit final
+                            connection.commit((commitError) => {
+                                if (commitError) {
+                                    return connection.rollback(() => {
+                                        connection.release();
+                                        reject(commitError);
+                                    });
+                                }
+                                connection.release();
+                                resolve({
+                                    mensaje: "Gimnasio creado exitosamente",
+                                    id_persona: idPersona,
+                                    id_gimnasio: resultGimnasio.insertId
+                                });
                             });
                         });
                     });

@@ -1,4 +1,5 @@
 const conexion = require('../config/conexion');
+const bcrypt = require('bcrypt');
 //pool aplicado
 // 1. Listar todos los atletas
 const listarAtletas = () => {
@@ -189,7 +190,7 @@ const listarAtletasPorIdEntrenador = (id_entrenador) => {
     });
 };
 
-// 4. Listar atletas por ID de entrenador
+// 4. Listar atletas por ID de gimnasio
 const listarAtletasPorIdGimnasio = (id_gimnasio) => {
     return new Promise((resolve, reject) => {
         conexion.getConnection((err, connection) => {
@@ -214,66 +215,46 @@ const listarAtletasPorIdGimnasio = (id_gimnasio) => {
 // 5. Crear un nuevo atleta
 const crearAtleta = (atletaData) => {
     return new Promise((resolve, reject) => {
-        // Obtener una conexión del pool
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
 
-            // Iniciar la transacción
-            connection.beginTransaction((error) => {
-                if (error) {
-                    connection.release(); // Liberar la conexión en caso de error
-                    return reject(error);
+            // Hashear la contraseña antes de guardar
+            bcrypt.hash(atletaData.password, 10, (hashErr, hashedPassword) => {
+                if (hashErr) {
+                    connection.release();
+                    return reject(hashErr);
                 }
 
-                // Paso 1: Insertar en la tabla tb_persona
-                const queryInsertPersona = `
-                    INSERT INTO tb_persona (
-                        dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
-                        celular, direccion, email, password, foto_archivo
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                `;
-
-                const personaValues = [
-                    atletaData.dni,
-                    3, // Permiso de atleta
-                    atletaData.nombre,
-                    atletaData.apellido,
-                    atletaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
-                    atletaData.fecha_nacimiento,
-                    atletaData.celular || null, // Si no se proporciona celular, se inserta NULL
-                    atletaData.direccion || null, // Si no se proporciona dirección, se inserta NULL
-                    atletaData.email,
-                    atletaData.password,
-                    null // Si no se proporciona foto_archivo, se inserta NULL por defecto en la imagen
-                ];
-
-                connection.query(queryInsertPersona, personaValues, (error, result) => {
+                // Iniciar la transacción
+                connection.beginTransaction((error) => {
                     if (error) {
-                        // Si hay un error, revertir la transacción
-                        return connection.rollback(() => {
-                            connection.release(); // Liberar la conexión
-                            reject(error);
-                        });
+                        connection.release();
+                        return reject(error);
                     }
 
-                    // Obtener el ID de la persona recién creada
-                    const idPersona = result.insertId;
-
-                    // Paso 2: Insertar en la tabla tb_atleta
-                    const queryInsertAtleta = `
-                        INSERT INTO tb_atleta (
-                            id_persona, id_entrenador, id_gimnasio, estado
-                        ) VALUES (?, ?, ?, ?)
+                    // Paso 1: Insertar en la tabla tb_persona
+                    const queryInsertPersona = `
+                        INSERT INTO tb_persona (
+                            dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
+                            celular, direccion, email, password, foto_archivo
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     `;
 
-                    const atletaValues = [
-                        idPersona,
-                        atletaData.id_entrenador || null, // Si no se proporciona id_entrenador, se inserta NULL
-                        atletaData.id_gimnasio || null, // Si no se proporciona id_gimnasio, se inserta NULL
-                        'activo' // Por defecto, el estado será 'activo'
+                    const personaValues = [
+                        atletaData.dni,
+                        3, // Permiso de atleta
+                        atletaData.nombre,
+                        atletaData.apellido,
+                        atletaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
+                        atletaData.fecha_nacimiento,
+                        atletaData.celular || null, // Si no se proporciona celular, se inserta NULL
+                        atletaData.direccion || null, // Si no se proporciona dirección, se inserta NULL
+                        atletaData.email,
+                        hashedPassword, // Usar la contraseña hasheada
+                        null // Si no se proporciona foto_archivo, se inserta NULL por defecto en la imagen
                     ];
 
-                    connection.query(queryInsertAtleta, atletaValues, (error, resultAtleta) => {
+                    connection.query(queryInsertPersona, personaValues, (error, result) => {
                         if (error) {
                             // Si hay un error, revertir la transacción
                             return connection.rollback(() => {
@@ -282,24 +263,51 @@ const crearAtleta = (atletaData) => {
                             });
                         }
 
-                        // Confirmar la transacción
-                        connection.commit((commitError) => {
-                            if (commitError) {
-                                // Si hay un error al confirmar, revertir la transacción
+                        // Obtener el ID de la persona recién creada
+                        const idPersona = result.insertId;
+
+                        // Paso 2: Insertar en la tabla tb_atleta
+                        const queryInsertAtleta = `
+                            INSERT INTO tb_atleta (
+                                id_persona, id_entrenador, id_gimnasio, estado
+                            ) VALUES (?, ?, ?, ?)
+                        `;
+
+                        const atletaValues = [
+                            idPersona,
+                            atletaData.id_entrenador || null, // Si no se proporciona id_entrenador, se inserta NULL
+                            atletaData.id_gimnasio || null, // Si no se proporciona id_gimnasio, se inserta NULL
+                            'activo' // Por defecto, el estado será 'activo'
+                        ];
+
+                        connection.query(queryInsertAtleta, atletaValues, (error, resultAtleta) => {
+                            if (error) {
+                                // Si hay un error, revertir la transacción
                                 return connection.rollback(() => {
                                     connection.release(); // Liberar la conexión
-                                    reject(commitError);
+                                    reject(error);
                                 });
                             }
 
-                            // Liberar la conexión después de confirmar
-                            connection.release();
+                            // Confirmar la transacción
+                            connection.commit((commitError) => {
+                                if (commitError) {
+                                    // Si hay un error al confirmar, revertir la transacción
+                                    return connection.rollback(() => {
+                                        connection.release(); // Liberar la conexión
+                                        reject(commitError);
+                                    });
+                                }
 
-                            // Retornar el resultado final
-                            resolve({
-                                mensaje: "Atleta creado exitosamente",
-                                id_persona: idPersona,
-                                id_atleta: resultAtleta.insertId
+                                // Liberar la conexión después de confirmar
+                                connection.release();
+
+                                // Retornar el resultado final
+                                resolve({
+                                    mensaje: "Atleta creado exitosamente",
+                                    id_persona: idPersona,
+                                    id_atleta: resultAtleta.insertId
+                                });
                             });
                         });
                     });
