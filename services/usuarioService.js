@@ -41,57 +41,66 @@ const crearPersona = (personaData) => {
         conexion.getConnection((err, connection) => {
             if (err) return reject(err);
 
-            // Iniciar la transacción
-            connection.beginTransaction((error) => {
-                if (error) {
-                    connection.release(); // Liberar la conexión
-                    return reject(error);
+            // Hashear la contraseña antes de guardar
+            const passwordEnTextoPlano = personaData.password || '123';
+            bcrypt.hash(passwordEnTextoPlano, 10, (err, hash) => {
+                if (err) {
+                    connection.release();
+                    return reject(err);
                 }
 
-                // Paso 1: Insertar en la tabla tb_persona
-                const queryInsertPersona = `
+                // Iniciar la transacción
+                connection.beginTransaction((error) => {
+                    if (error) {
+                        connection.release(); // Liberar la conexión
+                        return reject(error);
+                    }
+
+                    // Paso 1: Insertar en la tabla tb_persona
+                    const queryInsertPersona = `
                     INSERT INTO tb_persona (
                         dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
                         celular, direccion, email, password, foto_archivo
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `;
-                const personaValues = [
-                    personaData.dni,
-                    personaData.id_acceso || 3, // Permiso por defecto (puedes ajustarlo)
-                    personaData.nombre,
-                    personaData.apellido,
-                    personaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
-                    personaData.fecha_nacimiento,
-                    personaData.celular || null, // Si no se proporciona celular, se inserta NULL
-                    personaData.direccion || null, // Si no se proporciona dirección, se inserta NULL
-                    personaData.email,
-                    '$2b$10$5t2sv9aI6C9cbDtFlWp1iekWGMk.Addu7ha6dWzK50CC2Uc.1/Rzi', // Contraseña por defecto (123)
-                    personaData.foto_archivo || null // Si no se proporciona foto_archivo, se inserta NULL
-                ];
+                    const personaValues = [
+                        personaData.dni,
+                        personaData.id_acceso || 3, // Permiso por defecto (puedes ajustarlo)
+                        personaData.nombre,
+                        personaData.apellido,
+                        personaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
+                        personaData.fecha_nacimiento,
+                        personaData.celular || null, // Si no se proporciona celular, se inserta NULL
+                        personaData.direccion || null, // Si no se proporciona dirección, se inserta NULL
+                        personaData.email,
+                        hash, // Contraseña hasheada
+                        personaData.foto_archivo || null // Si no se proporciona foto_archivo, se inserta NULL
+                    ];
 
-                connection.query(queryInsertPersona, personaValues, (error, result) => {
-                    if (error) {
-                        // Si hay un error, revertir la transacción
-                        return connection.rollback(() => {
-                            connection.release(); // Liberar la conexión
-                            reject(error);
-                        });
-                    }
-
-                    // Confirmar la transacción
-                    connection.commit((commitError) => {
-                        if (commitError) {
-                            // Si hay un error al confirmar, revertir la transacción
+                    connection.query(queryInsertPersona, personaValues, (error, result) => {
+                        if (error) {
+                            // Si hay un error, revertir la transacción
                             return connection.rollback(() => {
                                 connection.release(); // Liberar la conexión
-                                reject(commitError);
+                                reject(error);
                             });
                         }
 
-                        connection.release(); // Liberar la conexión
-                        resolve({
-                            mensaje: "Persona creada exitosamente",
-                            id_persona: result.insertId
+                        // Confirmar la transacción
+                        connection.commit((commitError) => {
+                            if (commitError) {
+                                // Si hay un error al confirmar, revertir la transacción
+                                return connection.rollback(() => {
+                                    connection.release(); // Liberar la conexión
+                                    reject(commitError);
+                                });
+                            }
+
+                            connection.release(); // Liberar la conexión
+                            resolve({
+                                mensaje: "Persona creada exitosamente",
+                                id_persona: result.insertId
+                            });
                         });
                     });
                 });
