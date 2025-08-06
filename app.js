@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes'); //Importamos las rutas de aut
 const bodyParser = require('body-parser'); //Middleware para analizar el cuerpo de las solicitudes HTTP.
 const cors = require('cors');
 const suscripcionRoutes = require('./routes/suscripcionRoutes');
+const webhookRoutes = require('./routes/webHookRoutes'); // Importamos las rutas del webhook
 
 
 
@@ -76,6 +77,7 @@ app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIO
 app.use('/api/', suscripcionRoutes);
 app.use('/api/', mainRoutes);
 app.use('/api/', authRoutes);
+app.use('/webhook', webhookRoutes); // Asegúrate de que esta ruta esté definida
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);

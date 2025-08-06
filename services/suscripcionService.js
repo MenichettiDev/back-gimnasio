@@ -1,6 +1,8 @@
 const mercadopago = require('mercadopago');
 
-async function crearSuscripcion({ payer_email, reason, frequency, frequency_type, transaction_amount, currency_id, back_url }) {
+async function crearSuscripcion({ payer_email, reason,
+    frequency, frequency_type, transaction_amount,
+    currency_id, back_url, id_persona }) {
     const preference = {
         reason,
         auto_recurring: {
@@ -10,7 +12,9 @@ async function crearSuscripcion({ payer_email, reason, frequency, frequency_type
             currency_id
         },
         payer_email,
-        back_url
+        back_url: `${back_url}?user_id=${id_persona}&payment_success=true`,
+        notification_url: `${process.env.BASE_URL}/webhooks/mercadopago`,
+        external_reference: `${id_persona}_${Date.now()}`
     };
 
     try {

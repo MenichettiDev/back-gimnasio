@@ -2,7 +2,8 @@ const { crearSuscripcion } = require('../services/suscripcionService');
 
 async function crearSuscripcionController(req, res) {
     try {
-        const { reason, frequency, frequency_type, transaction_amount, currency_id, back_url, payer_email } = req.body;
+        const { reason, frequency, frequency_type,
+            transaction_amount, currency_id, back_url, payer_email, id_persona } = req.body;
         const suscripcion = await crearSuscripcion({
             reason,
             frequency,
@@ -10,7 +11,8 @@ async function crearSuscripcionController(req, res) {
             transaction_amount,
             currency_id,
             payer_email,
-            back_url
+            back_url,
+            id_persona
         });
         res.status(201).json(suscripcion);
     } catch (error) {

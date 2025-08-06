@@ -19,14 +19,14 @@ const metasController = require('../controllers/metasController');
 
 
 // Ruta para obtener los menús de una persona por su id_persona
-router.get('/getMenus', menuController.obtenerMenus);
-router.post('/menusByIdAcceso', menuController.obtenerMenusByIdAcceso);
+// router.get('/getMenus', menuController.obtenerMenus);
+// router.post('/menusByIdAcceso', menuController.obtenerMenusByIdAcceso);
 
 
 //Entrenador
 router.post('/getEntrenadorByIdPersona', entrenadorController.obtenerEntrenadorByIdPersona);
 router.post('/crearEntrenador', entrenadorController.crearEntrenador);
-router.post('/asignar-gimnasio', entrenadorController.asignarGimnasios);
+// router.post('/asignar-gimnasio', entrenadorController.asignarGimnasios);
 router.get('/getEntrenadores', entrenadorController.obtenerEntrenadores);
 
 
@@ -44,7 +44,7 @@ router.get('/personas', usuarioController.obtenerPersonas); // Listar todas las 
 router.get('/personas/:id_persona', usuarioController.obtenerPersonaPorId); // Obtener una persona por ID
 router.post('/personas', usuarioController.crearPersona); // Crear una nueva persona
 router.put('/personas/:id_persona', usuarioController.editarPersona); // Editar una persona existente
-router.delete('/personas/:id_persona', usuarioController.eliminarPersona); // Eliminar una persona
+// router.delete('/personas/:id_persona', usuarioController.eliminarPersona); // Eliminar una persona
 
 
 //Ejercicio
@@ -81,19 +81,19 @@ router.delete('/grupos-musculares/:id', gruposMuscularesController.eliminarGrupo
 
 
 //Membresias
-router.post('/getMembresiasByIdGimnaiso', membresiaController.obtenerMembresiaByGimnasio);
-router.get('/getMembresias', membresiaController.obtenerMembresias);
+// router.post('/getMembresiasByIdGimnaiso', membresiaController.obtenerMembresiaByGimnasio);
+// router.get('/getMembresias', membresiaController.obtenerMembresias);
 
 
 //Rutinas
 router.post('/getRutinaByIdAtleta', rutinaController.obtenerRutinaByIdAtleta);
-router.get('/getRutinasFree', rutinaController.obtenerRutinasFree);
+// router.get('/getRutinasFree', rutinaController.obtenerRutinasFree);
 router.post('/getRutinaByIdCreador', rutinaController.obtenerRutinaByIdCreador);
 router.post('/getRutinaByIdRutina', rutinaController.obtenerRutinaByIdRutina);
 router.post('/crearRutinaYAsignarAtleta', rutinaController.crearRutinaYAsignarAtleta);
 router.post('/editarRutina', rutinaController.editarRutinaYAsignarAtleta);
 router.post('/eliminarRutina', rutinaController.eliminarRutina);
-router.post('/getRutinasFiltradas', rutinaController.filtrarRutinas);
+// router.post('/getRutinasFiltradas', rutinaController.filtrarRutinas);
 
 
 
@@ -102,20 +102,20 @@ router.get('/getFraseAleatoria', fraseController.obtenerFraseAleatoria);
 
 
 // Rutas para las formas de pago
-router.get('/getFormasPago', formaPagoController.obtenerFormasPago); // Listar todas las formas de pago
-router.get('/formas-pago/:id', formaPagoController.obtenerFormaPagoById); // Obtener una forma de pago por ID
-router.post('/formas-pago', formaPagoController.crearFormaPago); // Crear una nueva forma de pago
-router.put('/formas-pago/:id', formaPagoController.actualizarFormaPago); // Actualizar una forma de pago
-router.delete('/formas-pago/:id', formaPagoController.eliminarFormaPago); // Eliminar una forma de pago
+// router.get('/getFormasPago', formaPagoController.obtenerFormasPago); // Listar todas las formas de pago
+// router.get('/formas-pago/:id', formaPagoController.obtenerFormaPagoById); // Obtener una forma de pago por ID
+// router.post('/formas-pago', formaPagoController.crearFormaPago); // Crear una nueva forma de pago
+// router.put('/formas-pago/:id', formaPagoController.actualizarFormaPago); // Actualizar una forma de pago
+// router.delete('/formas-pago/:id', formaPagoController.eliminarFormaPago); // Eliminar una forma de pago
 
 // Rutas para pagos
 router.post('/getPagosPorAtleta', pagoController.getPagosPorAtleta); // Obtener pagos por atleta
-router.post('/getPagoPorId', pagoController.getPagoPorId); // Obtener un pago por su ID
+// router.post('/getPagoPorId', pagoController.getPagoPorId); // Obtener un pago por su ID
 router.post('/createPago', pagoController.createPago); // Crear un nuevo pago
-router.post('/updatePago', pagoController.updatePago); // Actualizar un pago existente
-router.post('/deletePago', pagoController.deletePago); // Eliminar un pago por su ID
-router.post('/getPagosPorFecha', pagoController.getPagosPorFecha); // Obtener pagos por fecha
-router.post('/getTotalPagosPorAtleta', pagoController.getTotalPagosPorAtleta); // Obtener el total de pagos por atleta
+// router.post('/updatePago', pagoController.updatePago); // Actualizar un pago existente
+// router.post('/deletePago', pagoController.deletePago); // Eliminar un pago por su ID
+// router.post('/getPagosPorFecha', pagoController.getPagosPorFecha); // Obtener pagos por fecha
+// router.post('/getTotalPagosPorAtleta', pagoController.getTotalPagosPorAtleta); // Obtener el total de pagos por atleta
 
 
 // Rutas para medidas
