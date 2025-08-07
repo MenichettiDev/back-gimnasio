@@ -1,4 +1,4 @@
-const { procesarPagoMercadoPago } = require('../services/webHookMP');
+const { procesarPagoMercadoPago, procesarPreapprovalMercadoPago } = require('../services/webHookMPService');
 
 async function webhookMercadoPago(req, res) {
     try {
@@ -6,9 +6,13 @@ async function webhookMercadoPago(req, res) {
 
         const { type, data } = req.body;
 
-        // Solo procesar eventos de pago
+        // Procesar según el tipo de evento
         if (type === 'payment') {
+            console.log('Procesando pago individual...');
             await procesarPagoMercadoPago(data.id);
+        } else if (type === 'preapproval') {
+            console.log('Procesando evento de suscripción...');
+            await procesarPreapprovalMercadoPago(data.id);
         }
 
         // Siempre responder 200 para que MP no reintente

@@ -77,7 +77,7 @@ app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIO
 app.use('/api/', suscripcionRoutes);
 app.use('/api/', mainRoutes);
 app.use('/api/', authRoutes);
-app.use('/webhook', webhookRoutes); // Asegúrate de que esta ruta esté definida
+app.use('/webhook/', webhookRoutes); // Asegúrate de que esta ruta esté definida
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);

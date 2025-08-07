@@ -1,5 +1,5 @@
 const express = require('express');
-const { webhookMercadoPago } = require('../controllers/webHookMP');
+const { webhookMercadoPago } = require('../controllers/webHookMPController');
 
 const router = express.Router();
 

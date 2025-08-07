@@ -48,21 +48,22 @@ const crearPago = (nuevoPago) => {
 
                 const queryInsertPago = `
                     INSERT INTO tb_pago (
-                        id_atleta, 
-                        id_entrenador, 
-                        id_gimnasio,  
+                        id_persona, 
                         fecha_pago, 
                         monto, 
                         id_forma_pago,
-                        concepto
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?);
+                        concepto,
+                        mp_payment_id,
+                        mp_status,
+                        mp_subscription_id
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
                 `;
 
-                const { id_atleta = null, id_entrenador = null, id_gimnasio = null, fecha_pago, monto, id_forma_pago, concepto } = nuevoPago;
+                const { id_persona, fecha_pago, monto, id_forma_pago, concepto, mp_payment_id, mp_status, mp_subscription_id } = nuevoPago;
 
                 connection.query(
                     queryInsertPago,
-                    [id_atleta, id_entrenador, id_gimnasio, fecha_pago, monto, id_forma_pago, concepto],
+                    [id_persona, fecha_pago, monto, id_forma_pago, concepto, mp_payment_id, mp_status, mp_subscription_id],
                     (error, resultados) => {
                         if (error) {
                             connection.rollback(() => {
@@ -76,45 +77,20 @@ const crearPago = (nuevoPago) => {
 
                         // Función para actualizar la tabla correspondiente
                         const updates = [];
-                        if (id_atleta) {
+                        if (id_persona) {
                             updates.push(new Promise((res, rej) => {
                                 const query = `
-                                    UPDATE tb_atleta 
+                                    UPDATE tb_persona 
                                     SET ultimo_pago = ?
-                                    WHERE id_atleta = ?;
+                                    WHERE id_persona = ?;
                                 `;
-                                connection.query(query, [fecha_pago, id_atleta], (err) => {
+                                connection.query(query, [fecha_pago, id_persona], (err) => {
                                     if (err) return rej(err);
                                     res();
                                 });
                             }));
                         }
-                        if (id_entrenador) {
-                            updates.push(new Promise((res, rej) => {
-                                const query = `
-                                    UPDATE tb_entrenador 
-                                    SET ultimo_pago = ?
-                                    WHERE id_entrenador = ?;
-                                `;
-                                connection.query(query, [fecha_pago, id_entrenador], (err) => {
-                                    if (err) return rej(err);
-                                    res();
-                                });
-                            }));
-                        }
-                        if (id_gimnasio) {
-                            updates.push(new Promise((res, rej) => {
-                                const query = `
-                                    UPDATE tb_gimnasio 
-                                    SET ultimo_pago = ?
-                                    WHERE id_gimnasio = ?;
-                                `;
-                                connection.query(query, [fecha_pago, id_gimnasio], (err) => {
-                                    if (err) return rej(err);
-                                    res();
-                                });
-                            }));
-                        }
+
 
                         Promise.all(updates)
                             .then(() => {

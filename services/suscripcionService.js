@@ -13,7 +13,7 @@ async function crearSuscripcion({ payer_email, reason,
         },
         payer_email,
         back_url: `${back_url}?user_id=${id_persona}&payment_success=true`,
-        notification_url: `${process.env.BASE_URL}/webhooks/mercadopago`,
+        notification_url: `${process.env.BASE_URL}/webhook/mercadopago`,
         external_reference: `${id_persona}_${Date.now()}`
     };
 
