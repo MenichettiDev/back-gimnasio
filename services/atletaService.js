@@ -88,7 +88,6 @@ const editarAtleta = (idAtleta, atletaData) => {
                             dni = ?, 
                             nombre = ?, 
                             apellido = ?, 
-                            apodo = ?, 
                             fecha_nacimiento = ?, 
                             celular = ?, 
                             direccion = ?, 
@@ -101,7 +100,6 @@ const editarAtleta = (idAtleta, atletaData) => {
                         atletaData.dni,
                         atletaData.nombre,
                         atletaData.apellido,
-                        atletaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
                         atletaData.fecha_nacimiento,
                         atletaData.celular || null, // Si no se proporciona celular, se inserta NULL
                         atletaData.direccion || null, // Si no se proporciona dirección, se inserta NULL
@@ -235,7 +233,7 @@ const crearAtleta = (atletaData) => {
                     // Paso 1: Insertar en la tabla tb_persona
                     const queryInsertPersona = `
                         INSERT INTO tb_persona (
-                            dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
+                            dni, id_acceso, nombre, apellido, fecha_nacimiento,
                             celular, direccion, email, password, foto_archivo
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     `;
@@ -245,7 +243,6 @@ const crearAtleta = (atletaData) => {
                         3, // Permiso de atleta
                         atletaData.nombre,
                         atletaData.apellido,
-                        atletaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
                         atletaData.fecha_nacimiento,
                         atletaData.celular || null, // Si no se proporciona celular, se inserta NULL
                         atletaData.direccion || null, // Si no se proporciona dirección, se inserta NULL

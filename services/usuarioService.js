@@ -59,7 +59,7 @@ const crearPersona = (personaData) => {
                     // Paso 1: Insertar en la tabla tb_persona
                     const queryInsertPersona = `
                     INSERT INTO tb_persona (
-                        dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
+                        dni, id_acceso, nombre, apellido, fecha_nacimiento,
                         celular, direccion, email, password, foto_archivo
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `;
@@ -68,7 +68,6 @@ const crearPersona = (personaData) => {
                         personaData.id_acceso || 3, // Permiso por defecto (puedes ajustarlo)
                         personaData.nombre,
                         personaData.apellido,
-                        personaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
                         personaData.fecha_nacimiento,
                         personaData.celular || null, // Si no se proporciona celular, se inserta NULL
                         personaData.direccion || null, // Si no se proporciona dirección, se inserta NULL
@@ -130,7 +129,6 @@ const editarPersona = (idPersona, personaData) => {
                         id_acceso = ?, 
                         nombre = ?, 
                         apellido = ?, 
-                        apodo = ?, 
                         fecha_nacimiento = ?, 
                         celular = ?, 
                         direccion = ?, 
@@ -144,7 +142,6 @@ const editarPersona = (idPersona, personaData) => {
                     personaData.id_acceso || 3, // Permiso por defecto (puedes ajustarlo)
                     personaData.nombre,
                     personaData.apellido,
-                    personaData.apodo || null, // Si no se proporciona apodo, se inserta NULL
                     personaData.fecha_nacimiento,
                     personaData.celular || null, // Si no se proporciona celular, se inserta NULL
                     personaData.direccion || null, // Si no se proporciona dirección, se inserta NULL

@@ -5,11 +5,12 @@ const app = express(); //Creamos una instancia de la aplicación Express.
 const path = require('path'); //Usamos path para trabajar con rutas de archivos de forma más sencilla.
 const mainRoutes = require('./routes/mainRoutes'); //Importamos las rutas principales desde la carpeta 'routes'.
 const authRoutes = require('./routes/authRoutes'); //Importamos las rutas de autenticación.
+const ejercicioRoutes = require('./routes/ejercicioRoutes');
 const bodyParser = require('body-parser'); //Middleware para analizar el cuerpo de las solicitudes HTTP.
 const cors = require('cors');
 const suscripcionRoutes = require('./routes/suscripcionRoutes');
 const webhookRoutes = require('./routes/webHookRoutes'); // Importamos las rutas del webhook
-
+const fs = require('fs');
 
 
 app.set('trust proxy', true); // ¡Confía en el proxy (OpenLiteSpeed)!
@@ -77,6 +78,7 @@ app.options('*', cors()); // Habilita CORS para todas las rutas y métodos OPTIO
 app.use('/api/', suscripcionRoutes);
 app.use('/api/', mainRoutes);
 app.use('/api/', authRoutes);
+app.use('/api/', ejercicioRoutes);
 app.use('/webhook/', webhookRoutes); // Asegúrate de que esta ruta esté definida
 
 app.use((err, req, res, next) => {
@@ -84,6 +86,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Algo salió mal', error: err.message });
 });
 
+// Asegurar carpeta para guardar ejercicios y servirla estáticamente
+const ejerciciosDir = path.join(__dirname, 'Ejercicios');
+fs.mkdirSync(ejerciciosDir, { recursive: true });
+app.use('/Ejercicios', express.static(ejerciciosDir));
 
 //Configuración del puerto
 const PORT = process.env.PORT || 7000; //Usa el puerto del entorno o el 7000 por defecto.

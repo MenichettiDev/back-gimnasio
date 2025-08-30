@@ -45,7 +45,6 @@ const obtenerUsuarioLogueado = (email) => {
                     p.id_acceso,
                     p.nombre,
                     p.apellido,
-                    p.apodo,
                     p.fecha_nacimiento,
                     p.fecha_registro,
                     p.celular,

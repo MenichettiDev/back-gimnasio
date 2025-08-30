@@ -59,7 +59,7 @@ const crearEntrenador = (entrenadorData) => {
                     // Paso 1: Insertar en tb_persona
                     const queryInsertPersona = `
                         INSERT INTO tb_persona (
-                            dni, id_acceso, nombre, apellido, apodo, fecha_nacimiento,
+                            dni, id_acceso, nombre, apellido, fecha_nacimiento,
                             celular, direccion, email, password, foto_archivo
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     `;
@@ -68,7 +68,6 @@ const crearEntrenador = (entrenadorData) => {
                         2,
                         entrenadorData.nombre,
                         entrenadorData.apellido,
-                        entrenadorData.apodo || null,
                         entrenadorData.fecha_nacimiento,
                         entrenadorData.celular || null,
                         entrenadorData.direccion || null,

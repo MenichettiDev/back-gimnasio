@@ -48,7 +48,7 @@ router.put('/personas/:id_persona', usuarioController.editarPersona); // Editar 
 
 
 //Ejercicio
-router.post('/crearEjercicio', ejercicioController.createEjercicio);
+router.post('/crearEjercicio', ejercicioController.createEjercicioWithFiles);
 router.post('/getEjercicioByGrupoMuscular', ejercicioController.getEjercicioPorGrupoMuscular);
 router.post('/getEjercicioByIdEjercicio', ejercicioController.getEjercicioById);
 router.post('/updateEjercicio', ejercicioController.updateEjercicio);

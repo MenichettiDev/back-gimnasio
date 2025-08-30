@@ -40,7 +40,6 @@ const crearEjercicio = (nuevoEjercicio) => {
 
             const queryInsertEjercicio = `
                 INSERT INTO tb_ejercicios (
-                    id_entrenador, 
                     id_grupo_muscular, 
                     nombre, 
                     img_1, 
@@ -48,23 +47,25 @@ const crearEjercicio = (nuevoEjercicio) => {
                     img_3, 
                     descripcion, 
                     link_video
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+                ) VALUES (?, ?, ?, ?, ?, ?, ?);
             `;
 
-            const { 
-                id_entrenador, 
-                id_grupo_muscular, 
-                nombre, 
-                img_1, 
-                img_2, 
-                img_3, 
-                descripcion, 
-                link_video 
+            const {
+                id_grupo_muscular,
+                nombre,
+                img_1,
+                img_2,
+                img_3,
+                descripcion,
+                link_video
             } = nuevoEjercicio;
 
-            connection.query(queryInsertEjercicio, [id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video], (error, resultados) => {
+            connection.query(queryInsertEjercicio, [id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video], (error, resultados) => {
                 connection.release(); // Liberar la conexión
                 if (error) return reject(error);
+                if (!resultados || typeof resultados.insertId === 'undefined') {
+                    return reject(new Error('No se devolvió insertId al crear ejercicio'));
+                }
                 resolve(resultados.insertId); // Devuelve el ID del nuevo ejercicio creado
             });
         });
@@ -80,7 +81,6 @@ const actualizarEjercicio = (ejercicio) => {
             const queryUpdateEjercicio = `
                 UPDATE tb_ejercicios
                 SET 
-                    id_entrenador = ?,
                     id_grupo_muscular = ?,
                     nombre = ?,
                     img_1 = ?,
@@ -91,9 +91,9 @@ const actualizarEjercicio = (ejercicio) => {
                 WHERE id_ejercicio = ?;
             `;
 
-            const { id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio } = ejercicio;
+            const { id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio } = ejercicio;
 
-            connection.query(queryUpdateEjercicio, [id_entrenador, id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio], (error, resultados) => {
+            connection.query(queryUpdateEjercicio, [id_grupo_muscular, nombre, img_1, img_2, img_3, descripcion, link_video, id_ejercicio], (error, resultados) => {
                 connection.release(); // Liberar la conexión
                 if (error) return reject(error);
                 resolve(resultados); // Responde con el resultado de la actualización
