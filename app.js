@@ -13,6 +13,7 @@ const webhookRoutes = require('./routes/webHookRoutes'); // Importamos las rutas
 const fs = require('fs');
 
 
+
 app.set('trust proxy', true); // ¡Confía en el proxy (OpenLiteSpeed)!
 
 //Sesiones

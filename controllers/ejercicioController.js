@@ -97,11 +97,6 @@ exports.createEjercicio = async (req, res) => {
     }
 };
 
-
-
-
-
-
 exports.deleteEjercicio = async (req, res) => {
     const { id_ejercicio } = req.body;
 
@@ -111,14 +106,38 @@ exports.deleteEjercicio = async (req, res) => {
     }
 
     try {
-        // Llamar al servicio para eliminar el ejercicio
+        // 1) Obtener el registro para conocer id_grupo_muscular y validar existencia
+        const registros = await listarEjercicioById(id_ejercicio);
+        if (!registros || registros.length === 0) {
+            return res.status(404).json({ message: 'No se encontró ejercicio para eliminar' });
+        }
+        const ejercicio = registros[0];
+
+        // 2) Construir ruta de la carpeta: /Ejercicios/<id_grupo_muscular>/<id_ejercicio>
+        const dirEjercicio = path.join(__dirname, '..', 'Ejercicios', String(ejercicio.id_grupo_muscular), String(id_ejercicio));
+
+        // 3) Borrar carpeta completa del ejercicio (ignorar si no existe)
+        try {
+            // fs.rm es más moderno; usar force + recursive para eliminar todo sin fallar si no existe
+            if (typeof fs.rm === 'function') {
+                await fs.rm(dirEjercicio, { recursive: true, force: true });
+            } else {
+                // Compatibilidad: usar rmdir (puede estar deprecado en algunas versiones)
+                await fs.rmdir(dirEjercicio, { recursive: true }).catch(err => {
+                    if (err.code !== 'ENOENT') throw err;
+                });
+            }
+        } catch (err) {
+            // No crítico: loguear y continuar con eliminación en BD
+            console.warn('No se pudo eliminar la carpeta del ejercicio:', dirEjercicio, err.message);
+        }
+
+        // 4) Eliminar registro en la base de datos
         const resultados = await eliminarEjercicioPorId(id_ejercicio);
 
         if (resultados.affectedRows > 0) {
-            // Si se eliminó correctamente, devolver un mensaje de éxito
-            return res.json({ message: 'Ejercicio eliminado exitosamente' });
+            return res.json({ message: 'Ejercicio y carpeta asociados eliminados exitosamente' });
         } else {
-            // Si no se eliminó, devolver un mensaje adecuado
             return res.status(404).json({ message: 'No se encontró ejercicio para eliminar' });
         }
     } catch (error) {
@@ -250,3 +269,4 @@ exports.updateEjercicio = async (req, res) => {
         return res.status(500).json({ message: 'Error en la base de datos', error: error.message });
     }
 };
+
