@@ -1,12 +1,16 @@
 // Importar el servicio necesario para la consulta
 const { listarEjercicioPorGrupoMuscular, actualizarEjercicio, eliminarEjercicioPorId, listarEjercicioById, crearEjercicio } = require('../services/ejercicioService');
 const fs = require('fs').promises;
+const fsSync = require('fs');
 const path = require('path');
 const multer = require('multer');
 
+// Añadir configuración para carpeta media (puedes sobrescribir con MEDIA_ROOT env)
+const MEDIA_ROOT = process.env.MEDIA_ROOT || path.join(path.sep, 'media');
+const EJERCICIOS_BASE = path.join(MEDIA_ROOT, 'Ejercicios');
+
 // Temp upload dir for multer
 const tempDir = path.join(__dirname, '..', 'uploads', 'temp');
-const fsSync = require('fs');
 fsSync.mkdirSync(tempDir, { recursive: true });
 
 // Multer middleware: store temporales en uploads/temp
@@ -19,6 +23,14 @@ exports.upload = upload.fields([
     { name: 'img_3', maxCount: 1 }
 ]);
 
+// Asegurar que la carpeta MEDIA_ROOT y EJERCICIOS_BASE existan (evita errores al mover/leer archivos)
+try {
+    // fsSync.mkdirSync acepta rutas absolutas como '/media' en Linux
+    fsSync.mkdirSync(MEDIA_ROOT, { recursive: true });
+    fsSync.mkdirSync(EJERCICIOS_BASE, { recursive: true });
+} catch (e) {
+    console.warn('No se pudo crear MEDIA_ROOT/Ejercicios en init:', e.message);
+}
 
 exports.getEjercicioById = async (req, res) => {
     const { id_ejercicio } = req.body; // Obtener el id_ejercicio desde los parámetros de la solicitud
@@ -113,8 +125,8 @@ exports.deleteEjercicio = async (req, res) => {
         }
         const ejercicio = registros[0];
 
-        // 2) Construir ruta de la carpeta: /Ejercicios/<id_grupo_muscular>/<id_ejercicio>
-        const dirEjercicio = path.join(__dirname, '..', 'Ejercicios', String(ejercicio.id_grupo_muscular), String(id_ejercicio));
+        // 2) Construir ruta absoluta de la carpeta en MEDIA_ROOT: <MEDIA_ROOT>/Ejercicios/<id_grupo_muscular>/<id_ejercicio>
+        const dirEjercicio = path.join(EJERCICIOS_BASE, String(ejercicio.id_grupo_muscular), String(id_ejercicio));
 
         // 3) Borrar carpeta completa del ejercicio (ignorar si no existe)
         try {
@@ -159,8 +171,8 @@ exports.createEjercicioWithFiles = async (req, res) => {
         return res.status(400).json({ message: 'Faltan campos obligatorios: id_grupo_muscular y nombre' });
     }
 
-    // Directorio base público (servido en app.js como /Ejercicios)
-    const ejerciciosBase = path.join(__dirname, '..', 'Ejercicios');
+    // Directorio base público fuera del proyecto (EJERCICIOS_BASE). Puedes cambiar MEDIA_ROOT con la var de entorno.
+    const ejerciciosBase = EJERCICIOS_BASE;
 
     try {
         // Asegurar que la carpeta base exista
@@ -181,11 +193,11 @@ exports.createEjercicioWithFiles = async (req, res) => {
         const insertId = await crearEjercicio(nuevoEjercicioParaInsert);
         if (!insertId || typeof insertId !== 'number') throw new Error('No se obtuvo id al insertar ejercicio');
 
-        // 2) Crear carpeta destino: /Ejercicios/<id_grupo_muscular>/<id_ejercicio>/
+        // 2) Crear carpeta destino: <MEDIA_ROOT>/Ejercicios/<id_grupo_muscular>/<id_ejercicio>/
         const destDir = path.join(ejerciciosBase, String(id_grupo_muscular), String(insertId));
         await fs.mkdir(destDir, { recursive: true });
 
-        // Helper para mover archivo desde temp a destino y devolver ruta pública
+        // Helper para mover archivo desde temp a destino y devolver ruta pública (URL empieza con /media)
         const moveFileToDest = async (fileObj, targetName) => {
             if (!fileObj || !fileObj[0]) return null;
             const file = fileObj[0];
@@ -193,7 +205,8 @@ exports.createEjercicioWithFiles = async (req, res) => {
             const finalName = `${targetName}${ext}`;
             const destPath = path.join(destDir, finalName);
             await fs.rename(file.path, destPath); // mover temp -> final
-            const publicPath = path.posix.join('Ejercicios', String(id_grupo_muscular), String(insertId), finalName).replace(/\\/g, '/');
+            // devolver ruta accesible por el cliente. Asegúrate de exponer /media como estático en tu app.
+            const publicPath = path.posix.join('/media', 'Ejercicios', String(id_grupo_muscular), String(insertId), finalName);
             return publicPath;
         };
 

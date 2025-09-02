@@ -11,6 +11,7 @@ const cors = require('cors');
 const suscripcionRoutes = require('./routes/suscripcionRoutes');
 const webhookRoutes = require('./routes/webHookRoutes'); // Importamos las rutas del webhook
 const fs = require('fs');
+const MEDIA_ROOT = process.env.MEDIA_ROOT || path.join(path.sep, 'media');
 
 
 
@@ -87,10 +88,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Algo salió mal', error: err.message });
 });
 
-// Asegurar carpeta para guardar ejercicios y servirla estáticamente
-const ejerciciosDir = path.join(__dirname, 'Ejercicios');
-fs.mkdirSync(ejerciciosDir, { recursive: true });
-app.use('/Ejercicios', express.static(ejerciciosDir));
+// Asegurar carpeta MEDIA_ROOT y servirla estáticamente en /media
+try {
+  fs.mkdirSync(MEDIA_ROOT, { recursive: true });
+} catch (e) {
+  console.warn('No se pudo crear MEDIA_ROOT:', e.message);
+}
+app.use('/media', express.static(MEDIA_ROOT));
 
 //Configuración del puerto
 const PORT = process.env.PORT || 7000; //Usa el puerto del entorno o el 7000 por defecto.
