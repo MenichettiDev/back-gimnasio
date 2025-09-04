@@ -55,8 +55,7 @@ exports.crearEntrenador = async (req, res) => {
             !entrenadorData.nombre ||
             !entrenadorData.apellido ||
             !entrenadorData.fecha_nacimiento ||
-            !entrenadorData.email ||
-            !entrenadorData.fecha_ingreso
+            !entrenadorData.email
         ) {
             return res.status(400).json({
                 message: 'Faltan datos obligatorios para crear el entrenador'
