@@ -354,3 +354,18 @@ exports.eliminarRelacionEntrenadorGimnasio = (id) => {
         });
     });
 };
+
+// Crear relación atleta-gimnasio directamente (sin solicitud)
+exports.crearRelacionAtletaGimnasio = (id_atleta, id_gimnasio) => {
+    return new Promise((resolve, reject) => {
+        conexion.getConnection((err, connection) => {
+            if (err) return reject(err);
+            const query = 'INSERT INTO tb_atleta_gimnasio (id_atleta, id_gimnasio, activo) VALUES (?, ?, 1)';
+            connection.query(query, [id_atleta, id_gimnasio], (error, resultados) => {
+                connection.release();
+                if (error) return reject(error);
+                resolve({ success: true });
+            });
+        });
+    });
+};

@@ -17,7 +17,7 @@ exports.obtenerRutinaByIdAtleta = async (req, res) => {
 
     try {
 
-        const resultados = await listarRutinasByIdAtleta(id_atleta);
+        const resultados = await listarRutinasByIdAtleta(id_atleta, id_entrenador, id_gimnasio);
 
         if (resultados && resultados.length > 0) {
 

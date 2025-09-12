@@ -1,5 +1,7 @@
 const conexion = require('../config/conexion');
 const bcrypt = require('bcrypt');
+const relacionesService = require('./relacionesService');
+
 //pool aplicado
 // 1. Listar todos los atletas
 const listarAtletas = () => {
@@ -299,12 +301,26 @@ const crearAtleta = (atletaData) => {
                                 // Liberar la conexión después de confirmar
                                 connection.release();
 
-                                // Retornar el resultado final
-                                resolve({
-                                    mensaje: "Atleta creado exitosamente",
-                                    id_persona: idPersona,
-                                    id_atleta: resultAtleta.insertId
-                                });
+                                // Paso 3: Crear relación con gimnasio id = 0
+                                relacionesService.crearRelacionAtletaGimnasio(resultAtleta.insertId, 0)
+                                    .then(() => {
+                                        // Retornar el resultado final
+                                        resolve({
+                                            mensaje: "Atleta creado exitosamente",
+                                            id_persona: idPersona,
+                                            id_atleta: resultAtleta.insertId
+                                        });
+                                    })
+                                    .catch((relacionError) => {
+                                        // Si falla la creación de la relación, solo logear el error pero no fallar
+                                        console.error('Error al crear relación con gimnasio id=0:', relacionError);
+                                        resolve({
+                                            mensaje: "Atleta creado exitosamente",
+                                            id_persona: idPersona,
+                                            id_atleta: resultAtleta.insertId,
+                                            warning: "Error al crear relación con gimnasio por defecto"
+                                        });
+                                    });
                             });
                         });
                     });

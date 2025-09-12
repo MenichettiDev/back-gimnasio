@@ -87,7 +87,7 @@ const crearGimnasio = (gimnasioData) => {
                         INSERT INTO tb_persona (
                             dni, id_acceso, nombre, apellido, fecha_nacimiento,
                             celular, direccion, email, password, foto_archivo
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?)
                     `;
                     const personaValues = [
                         gimnasioData.dni,
