@@ -19,11 +19,11 @@ class Medidas {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_atleta) {
             errors.push('El ID del atleta es requerido');
         }
-        
+
         if (!data.fecha_medicion) {
             errors.push('La fecha de medición es requerida');
         }

@@ -11,24 +11,24 @@ class Rutina {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_creador) {
             errors.push('El ID del creador es requerido');
         }
-        
+
         if (!data.nombre) {
             errors.push('El nombre de la rutina es requerido');
         }
-        
-        if (!data.cantidad_dias || !['1','2','3','4','5','6','7'].includes(data.cantidad_dias)) {
+
+        if (!data.cantidad_dias || !['1', '2', '3', '4', '5', '6', '7'].includes(data.cantidad_dias)) {
             errors.push('La cantidad de días debe ser entre 1 y 7');
         }
-        
-        if (!data.nivel_atleta || !['Principiante','Intermedio','Avanzado'].includes(data.nivel_atleta)) {
+
+        if (!data.nivel_atleta || !['Principiante', 'Intermedio', 'Avanzado'].includes(data.nivel_atleta)) {
             errors.push('El nivel del atleta debe ser Principiante, Intermedio o Avanzado');
         }
-        
-        if (!data.objetivo || !['Musculacion','Tonificacion','Resistencia','Peso'].includes(data.objetivo)) {
+
+        if (!data.objetivo || !['Musculacion', 'Tonificacion', 'Resistencia', 'Peso'].includes(data.objetivo)) {
             errors.push('El objetivo debe ser Musculacion, Tonificacion, Resistencia o Peso');
         }
 

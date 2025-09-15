@@ -6,11 +6,11 @@ class Frases {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.frase) {
             errors.push('La frase es requerida');
         }
-        
+
         if (data.frase && data.frase.length > 500) {
             errors.push('La frase no puede exceder los 500 caracteres');
         }

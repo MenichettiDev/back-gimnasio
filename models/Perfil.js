@@ -7,7 +7,7 @@ class Perfil {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.nombre_perfil) {
             errors.push('El nombre del perfil es requerido');
         }

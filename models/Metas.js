@@ -12,15 +12,15 @@ class Metas {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_atleta) {
             errors.push('El ID del atleta es requerido');
         }
-        
+
         if (!data.descripcion) {
             errors.push('La descripción de la meta es requerida');
         }
-        
+
         if (!data.tipo_meta) {
             errors.push('El tipo de meta es requerido');
         }

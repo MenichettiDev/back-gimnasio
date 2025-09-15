@@ -12,11 +12,11 @@ class Ejercicio {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_grupo_muscular) {
             errors.push('El ID del grupo muscular es requerido');
         }
-        
+
         if (!data.nombre) {
             errors.push('El nombre del ejercicio es requerido');
         }

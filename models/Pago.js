@@ -13,19 +13,19 @@ class Pago {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_persona) {
             errors.push('El ID de persona es requerido');
         }
-        
+
         if (!data.monto || data.monto <= 0) {
             errors.push('El monto debe ser mayor a 0');
         }
-        
+
         if (!data.concepto) {
             errors.push('El concepto del pago es requerido');
         }
-        
+
         if (!data.id_forma_pago) {
             errors.push('La forma de pago es requerida');
         }

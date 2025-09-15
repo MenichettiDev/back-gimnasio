@@ -20,25 +20,25 @@ class Persona {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.dni) {
             errors.push('El DNI es requerido');
         }
-        
+
         if (!data.nombre) {
             errors.push('El nombre es requerido');
         }
-        
+
         if (!data.apellido) {
             errors.push('El apellido es requerido');
         }
-        
+
         if (!data.email) {
             errors.push('El email es requerido');
         } else if (!this.validateEmail(data.email)) {
             errors.push('El email no tiene un formato válido');
         }
-        
+
         if (!data.password) {
             errors.push('La contraseña es requerida');
         }

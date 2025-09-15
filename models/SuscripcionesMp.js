@@ -20,19 +20,19 @@ class SuscripcionesMp {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_persona) {
             errors.push('El ID de persona es requerido');
         }
-        
+
         if (!data.monto_mensual || data.monto_mensual <= 0) {
             errors.push('El monto mensual debe ser mayor a 0');
         }
-        
+
         if (!data.fecha_inicio) {
             errors.push('La fecha de inicio es requerida');
         }
-        
+
         if (data.estado && !['activa', 'cancelada', 'pausada', 'finalizada'].includes(data.estado)) {
             errors.push('El estado debe ser activa, cancelada, pausada o finalizada');
         }

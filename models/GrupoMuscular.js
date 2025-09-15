@@ -6,7 +6,7 @@ class GrupoMuscular {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.nombre) {
             errors.push('El nombre del grupo muscular es requerido');
         }

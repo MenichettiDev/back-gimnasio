@@ -8,11 +8,11 @@ class Repeticion {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.nombre) {
             errors.push('El nombre de la repetición es requerido');
         }
-        
+
         if (!data.frecuencia) {
             errors.push('La frecuencia es requerida');
         }

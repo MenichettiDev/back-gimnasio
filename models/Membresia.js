@@ -13,24 +13,24 @@ class Membresia {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_gimnasio) {
             errors.push('El ID del gimnasio es requerido');
         }
-        
+
         if (!data.nombre) {
             errors.push('El nombre de la membresía es requerido');
         }
-        
+
         if (!data.precio || data.precio <= 0) {
             errors.push('El precio debe ser mayor a 0');
         }
-        
+
         if (!data.duracion || data.duracion <= 0) {
             errors.push('La duración debe ser mayor a 0');
         }
-        
-        if (!data.tipo || !['mensual','anual','semanal','trimestral'].includes(data.tipo)) {
+
+        if (!data.tipo || !['mensual', 'anual', 'semanal', 'trimestral'].includes(data.tipo)) {
             errors.push('El tipo debe ser mensual, anual, semanal o trimestral');
         }
 

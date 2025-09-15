@@ -17,15 +17,15 @@ class Gimnasio {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_persona) {
             errors.push('El ID de persona es requerido');
         }
-        
+
         if (!data.nombre) {
             errors.push('El nombre del gimnasio es requerido');
         }
-        
+
         if (data.estado && !['activo', 'inactivo'].includes(data.estado)) {
             errors.push('El estado debe ser activo o inactivo');
         }

@@ -18,23 +18,23 @@ class PagosMp {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_suscripcion_mp) {
             errors.push('El ID de suscripción MP es requerido');
         }
-        
+
         if (!data.id_persona) {
             errors.push('El ID de persona es requerido');
         }
-        
+
         if (!data.mp_payment_id) {
             errors.push('El ID de pago de MercadoPago es requerido');
         }
-        
+
         if (!data.monto || data.monto <= 0) {
             errors.push('El monto debe ser mayor a 0');
         }
-        
+
         if (!data.estado) {
             errors.push('El estado es requerido');
         }

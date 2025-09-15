@@ -9,11 +9,11 @@ class Logros {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.id_atleta) {
             errors.push('El ID del atleta es requerido');
         }
-        
+
         if (!data.nombre_logro) {
             errors.push('El nombre del logro es requerido');
         }

@@ -6,7 +6,7 @@ class FormaPago {
 
     static validate(data) {
         const errors = [];
-        
+
         if (!data.nombre) {
             errors.push('El nombre de la forma de pago es requerido');
         }
